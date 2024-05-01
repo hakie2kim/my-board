@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+	<!-- <bean id="memberDao" class="com.portfolio.www.dao.MemberDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="memberAuthDao"
+		class="com.portfolio.www.dao.MemberAuthDao">
+		<property name="dataSource" ref="dataSource" />
+	</bean> -->
+
+	<!-- 이메일 전송하기 위한 bean 설정 -->
+	<!-- <bean id="javaMailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.naver.com" />
+		<property name="port" value="587" />
+		<property name="username" value="${email.username}" />
+		<property name="password" value="${email.password}" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="emailUtil" class="com.portfolio.www.util.EmailUtil">
+		<property name="javaMailSender" ref="javaMailSender" />
+	</bean> -->
+
+	<!-- Jasypt Start -->
+	<!-- <bean id="encryptorConfig"
+		class="org.jasypt.encryption.pbe.config.EnvironmentPBEConfig">
+		사용할 암호화 알고리즘
+		<property name="algorithm" value="PBEWithMD5AndDES" />
+		PBE (패스워드 기반 암호화) 암호 설정
+		<property name="password" value="password" />
+	</bean>
+
+	<bean id="encryptor"
+		class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+		<property name="config" ref="encryptorConfig" />
+	</bean>
+
+	<bean
+		class="org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer">
+		<constructor-arg ref="encryptor" />
+		<property name="locations">
+			<list>
+				application.properties 파일 경로
+				<value>classpath:/application.properties</value>
+			</list>
+		</property>
+	</bean> -->
+	<!-- Jasypt End -->
+</beans>

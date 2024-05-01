@@ -21,8 +21,8 @@
 
 	<!-- Annotation 기반의 Component Scan 필터(service package 만 검색) -->
 	<context:component-scan base-package="com.pf.www">
-		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
-		<context:include-filter type="regex" expression="\.*\.dao\.*" />
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+		<!-- <context:include-filter type="regex" expression="\.*\.dao\.*" /> -->
 	</context:component-scan>
 
 </beans>

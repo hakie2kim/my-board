@@ -61,40 +61,18 @@ String ctx = request.getContextPath();
                                         </thead>
 
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>
-                                                	<a href="<c:url value='/forum/notice/readPage.do'/>">
-                                                		Payoneer
-                                                	</a>
-                                                </td>
-                                                <td>2024.03.23 21:57:13</td>
-                                                <td>홍길동</td>
-                                            </tr>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Payoneer</td>
-                                                <td>2024.03.23 21:57:13</td>
-                                                <td>홍길동</td>
-                                            </tr>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Payoneer</td>
-                                                <td>2024.03.23 21:57:13</td>
-                                                <td>홍길동</td>
-                                            </tr>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Payoneer</td>
-                                                <td>2024.03.23 21:57:13</td>
-                                                <td>홍길동</td>
-                                            </tr>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Payoneer</td>
-                                                <td>2024.03.23 21:57:13</td>
-                                                <td>홍길동</td>
-                                            </tr>
+                                        	<c:forEach var="board" items="${list}">
+	                                        	<tr>
+	                                                <td>${board.boardSeq}</td>
+	                                                <td>
+	                                                	<a href="<c:url value='/forum/notice/readPage.do'/>">
+	                                                		${board.title}
+	                                                	</a>
+	                                                </td>
+	                                                <td>${board.regDtm}</td>
+	                                                <td>${board.memberId}</td>
+	                                            </tr>
+                                            </c:forEach>
                                         </tbody>
                                     </table>
                                     <div style="display: inline-block; margin: 0 5px; float: right; padding-right:10px;">
