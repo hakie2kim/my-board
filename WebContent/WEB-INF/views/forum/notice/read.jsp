@@ -58,7 +58,7 @@ String ctx = request.getContextPath();
                     <div class="forum_detail_area ">
                         <div class="cardify forum--issue">
                             <div class="title_vote clearfix">
-                                <h3>Responsive Website Footer Menu</h3>
+                                <h3>${board.title}</h3>
 
                                 <div class="vote">
                                     <a href="#">
@@ -72,13 +72,11 @@ String ctx = request.getContextPath();
                             </div>
                             <!-- end .title_vote -->
                             <div class="suppot_query_tag">
-                                <img class="poster_avatar" src="<%=ctx%>/assest/template/images/support_avat1.png" alt="Support Avatar"> Mitesh Chavda
-                                <span>2024.03.23 20:41:22</span>
+                                <img class="poster_avatar" src="<%=ctx%>/assest/template/images/support_avat1.png" alt="Support Avatar">
+                                ${board.memberId}
+                                <span>${board.regDtm}</span>
                             </div>
-                            <p style="    margin-bottom: 0; margin-top: 19px;">
-                            	Nunc placerat mi id nisi interdum they mollis. Praesent pharetra, justot scel erisque the mattis
-                                leo quam. Nunc placerat mi id nisi interdum they mollis. Praesent phare tra, justo ut scel
-                                eris que the mattis, leo quam placerat mi id nisi interdum mollis</p>
+                            <p style="margin-bottom: 0; margin-top: 19px;">${board.content}</p>
                         </div>
                         <!-- end .forum_issue -->
 

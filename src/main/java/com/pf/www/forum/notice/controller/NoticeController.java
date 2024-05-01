@@ -39,6 +39,7 @@ public class NoticeController {
 	public ModelAndView readPage(@RequestParam HashMap<String, String> params) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
+		mv.addObject("board", boardService.findBoardByBoardSeq(params.get("boardSeq")));
 		mv.setViewName("forum/notice/read");
 		
 		return mv;

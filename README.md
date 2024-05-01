@@ -22,9 +22,9 @@
 
 - [ ] 게시물 목록 페이지 : `/forum//notice/listPage.do`
 
-- [ ] 게시물 읽기 페이지 : `/forum/notice/writePage.do`
+- [ ] 게시물 단건 조회 페이지 : `/forum/notice/readPage.do`
 
-- [ ] 게시물 쓰기 페이지 : `/forum/notice/readPage.do`
+- [ ] 게시물 쓰기 페이지 : `/forum/notice/writePage.do`
 
 ### 예외 처리
 
