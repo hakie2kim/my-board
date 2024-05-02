@@ -25,7 +25,7 @@ public class BoardDao extends JdbcTemplate {
 				+ "JOIN forum.`member` m "
 				+ "ON b.reg_member_seq = m.member_seq "
 				+ "LIMIT ?, ?; ";
-		Object[] args = {Integer.parseInt(params.get("currPage")) - 1, Integer.parseInt(params.get("postsPerPage"))};
+		Object[] args = {Integer.parseInt(params.get("startBoardSeq")), Integer.parseInt(params.get("postsPerPage"))};
 		return query(sql, boardRowMapper(), args);
 	}
 	

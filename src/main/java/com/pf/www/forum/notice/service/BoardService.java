@@ -15,6 +15,8 @@ public class BoardService {
 	BoardDao boardDao;
 	
 	public List<BoardDto> findAllBoards(HashMap<String, String> params) {
+		String startBoardSeq = String.valueOf((Integer.parseInt(params.get("currPage")) - 1) * Integer.parseInt(params.get("postsPerPage")));
+		params.put("startBoardSeq", startBoardSeq);
 		return boardDao.findAll(params);
 	}
 	

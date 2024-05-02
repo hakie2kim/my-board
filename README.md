@@ -4,6 +4,14 @@
 
 ### 게시물 목록
 
+`NoticeController` ➭ `BoardService` ➭ `BoardDao`
+`listPage()` ➭ `findAllBoards()` ➭ `findAll()` (파라미터, 리턴 타입 추후 보완 예정)
+
+### 게시물 단건 조회
+
+`NoticeController` ➭ `BoardService` ➭ `BoardDao`
+`readPage()` ➭ `findBoardByBoardSeq()` ➭ `findBoardByBoardSeq()` (파라미터, 리턴 타입 추후 보완 예정)
+
 ### 페이징
 
 ## 🔨 기능 요구사항
@@ -43,3 +51,25 @@ docker run --name mysql-lecture -p 53306:3306 -v ~/dev/docker/mysql:/etc/mysql/c
 ## 🚨 트러블 슈팅
 
 ## 📝 메모
+
+### `SQL LIMIT x OFFSET y`
+
+```sql
+SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id
+FROM forum.`board` b
+JOIN forum.`member` m
+ON b.reg_member_seq = m.member_seq
+LIMIT 20, OFFSET 10;
+```
+
+위와 같은 쿼리를 사용하게 되면 페이지에 따라 보여지는 게시물 목록을 다르게 설정할 수 있다. 위 쿼리는 처음 20개 행을 건너 뛰고 10개의 행을 갖고 온다. LIMIT을 사용해 페이지마다 원하는 게시물을 갖고 오게하는 sql은 다음과 같다.
+
+```sql
+SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id
+FROM forum.`board` b
+JOIN forum.`member` m
+ON b.reg_member_seq = m.member_seq
+LIMIT ((현재 페이지) - 1) * (페이지 당 게시물 수), OFFSET (페이지 당 게시물 수);
+```
+
+참고로 `OFFSET`은 생략 가능하다.
