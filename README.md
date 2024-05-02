@@ -186,6 +186,72 @@ docker run --name mysql-lecture -p 53306:3306 -v ~/dev/docker/mysql:/etc/mysql/c
 
 ## 🚨 트러블 슈팅
 
+### 게시물 목록에서 필요한 파라미터가 없는 경우
+
+`/forum//notice/listPage.do?page=1&size=10`의 `query string`에서 만약 값을 넘겨주지 않는다면 다음과 같은 에러가 발생한다.
+
+### 문제 상황
+
+```
+Request processing failed; nested exception is java.lang.NumberFormatException: Cannot parse null string
+com.pf.www.forum.notice.controller.NoticeController.listPage(NoticeController.java:25)
+```
+
+`startBoardSeq` 시작할 게시물 번호를 구하기 위해 `String`에서 `Integer`로 변환을 시도한다. 이때 `query string`의 값이 없는 경우 `null` 값을 `Integer` 값으로 변환하려 시도하기 때문에 위와 같은 에러가 발생한 것이다.
+
+### 해결 방법
+
+`page`의 값과 `size`의 값이 주어지지 않아도 기본값을 갖고 있게 `Spring`의 `@RequestParam` 기능을 사용했다.
+
+```java
+public ModelAndView listPage(
+  @RequestParam(defaultValue="1") Integer page,
+  @RequestParam(defaultValue="10") Integer size
+) {
+```
+
+### `JSP`의 `EL` 비교
+
+#### 문제 상황
+
+`list.jsp`의 `navbar`에서 표시하고 있는 페이지가 현재 페이지인가 아닌가를 구분하기 위해 다음과 같은 EL의 비교 표현을 사용한다.
+
+```
+<a class="page-numbers <c:if test="${params.page eq pageNum}">current</c:if>" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
+```
+
+하지만 `params.page`와 `현재 페이지`가 일치함에도 계속해서 `css`에서는 반영이 안되었다. `params.page`는 문자열 값 `pageNum`은 숫자 값이기 때문에 의도했던 비교가 되지 않고 있었던 것이다.
+
+#### 해결 방법
+
+```
+<a class="page-numbers <c:if test="${pagination.currentPage eq pageNum}">current</c:if>" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
+```
+
+여기서 `pagination.currentPage`는 숫자이다.
+
+### `JSP`의 `EL` 값 조회
+
+#### 문제 상황
+
+```
+org.apache.jasper.JasperException: 행 [93]에서 [/WEB-INF/views/forum/notice/list.jsp]을(를) 처리하는 중 예외 발생
+
+90: 				                                </c:if>
+91: 				                                <c:forEach var="pageNum" begin="${pagination.startPage}" end="${pagination.endPage}">
+92: 				                                	<c:if test="${pagination.currentPage eq pageNum}">
+93: 				                                		<a class="page-numbers current" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
+94: 				                                	</c:if>
+95: 				                                	<c:if test="${pagination.currentPage ne pageNum}">
+96: 					                                	<a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
+
+javax.el.PropertyNotFoundException: [postsPerPage] 특성이 [com.pf.www.forum.notice.util.Pagination] 유형에 없습니다.
+```
+
+#### 해결 방법
+
+`EL`은 객체의 값을 `${객체주소.필드}`와 같이 조회할 때 해당 클래스에 `getter`가 있는지 확인한다. 없는 경우 위와 같은 에러가 발생한다.
+
 ## 📝 메모
 
 ### `SQL LIMIT x OFFSET y`
@@ -209,3 +275,13 @@ LIMIT ((현재 페이지) - 1) * (페이지 당 게시물 수), OFFSET (페이�
 ```
 
 참고로 `OFFSET`은 생략 가능하다.
+
+### 식별 vs. 비식별 관계
+
+- 식별: 부모 테이블에 데이터가 존재해야 자식 테이블에 데이터를 입력할 수 있음
+
+  예) `자동차 테이블`에서 `자동차_아이디`가 `pk`일 때 `바퀴 테이블`에서 `자동차_아이디`를 `pk`로 갖는 경우
+
+- 비식별: 자식 데이터는 부모 데이터가 없어도 독립적으로 생성될 수 있음
+
+  예) `자동차 테이블`에서 `자동차_아이디`가 `pk`일 때 `자동차_아이디`가 `pk`, `바퀴 테이블`에서 `자동차_아이디`를 `pk`로 갖지 않는 경우

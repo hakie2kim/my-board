@@ -89,12 +89,7 @@ String ctx = request.getContextPath();
 					                                </a>
 				                                </c:if>
 				                                <c:forEach var="pageNum" begin="${pagination.startPage}" end="${pagination.endPage}">
-				                                	<c:if test="${pagination.currentPage eq pageNum}">
-				                                		<a class="page-numbers current" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
-				                                	</c:if>
-				                                	<c:if test="${pagination.currentPage ne pageNum}">
-					                                	<a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
-				                                	</c:if>
+				                                	<a class="page-numbers <c:if test="${pagination.currentPage eq pageNum}">current</c:if>" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
 				                                </c:forEach>
 				                                <c:if test="${pagination.next}">
 					                                <a class="next page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${pagination.endPage+1}&size=${pagination.postsPerPage}'/>">
