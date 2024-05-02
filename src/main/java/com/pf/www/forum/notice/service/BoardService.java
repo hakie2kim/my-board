@@ -14,13 +14,16 @@ public class BoardService {
 	@Autowired
 	BoardDao boardDao;
 	
-	public List<BoardDto> findAllBoards(HashMap<String, String> params) {
-		String startBoardSeq = String.valueOf((Integer.parseInt(params.get("currPage")) - 1) * Integer.parseInt(params.get("postsPerPage")));
-		params.put("startBoardSeq", startBoardSeq);
-		return boardDao.findAll(params);
+	public List<BoardDto> findAllBoards(Integer currPage, Integer postsPerPage) {
+		Integer startBoardSeq = (currPage - 1) * postsPerPage;
+		return boardDao.findAll(startBoardSeq, postsPerPage);
 	}
 	
 	public BoardDto findBoardByBoardSeq(String boardSeq) {
 		return boardDao.findBoardByBoardSeq(boardSeq);
+	}
+
+	public int cntTotalBoards() {
+		return boardDao.cntTotalBoards();
 	}
 }

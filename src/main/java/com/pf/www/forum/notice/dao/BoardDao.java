@@ -19,13 +19,13 @@ public class BoardDao extends JdbcTemplate {
 		super(dataSource);
 	};
 	
-	public List<BoardDto> findAll(HashMap<String, String> params) {
+	public List<BoardDto> findAll(Integer startBoardSeq, Integer postsPerPage) {
 		String sql = "SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id "
 				+ "FROM forum.`board` b "
 				+ "JOIN forum.`member` m "
 				+ "ON b.reg_member_seq = m.member_seq "
 				+ "LIMIT ?, ?; ";
-		Object[] args = {Integer.parseInt(params.get("startBoardSeq")), Integer.parseInt(params.get("postsPerPage"))};
+		Object[] args = {startBoardSeq, postsPerPage};
 		return query(sql, boardRowMapper(), args);
 	}
 	
@@ -57,5 +57,10 @@ public class BoardDao extends JdbcTemplate {
 			
 			return boardDto;
 		};
+	}
+
+	public int cntTotalBoards() {
+		String sql = "SELECT COUNT(*) FROM forum.`board`";
+		return queryForObject(sql, Integer.class);
 	}
 }

@@ -83,15 +83,24 @@ String ctx = request.getContextPath();
                                     <div class="pagination-area" style="padding-top: 45px;">
 				                        <nav class="navigation pagination" role="navigation">
 				                            <div class="nav-links">
-				                                <a class="prev page-numbers" href="#">
-				                                    <span class="lnr lnr-arrow-left"></span>
-				                                </a>
-				                                <a class="page-numbers current" href="#">1</a>
-				                                <a class="page-numbers" href="#">2</a>
-				                                <a class="page-numbers" href="#">3</a>
-				                                <a class="next page-numbers" href="#">
-				                                    <span class="lnr lnr-arrow-right"></span>
-				                                </a>
+				                                <c:if test="${pagination.prev}">
+					                                <a class="prev page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${pagination.startPage-1}&size=${pagination.postsPerPage}'/>">
+					                                    <span class="lnr lnr-arrow-left"></span>
+					                                </a>
+				                                </c:if>
+				                                <c:forEach var="pageNum" begin="${pagination.startPage}" end="${pagination.endPage}">
+				                                	<c:if test="${pagination.currentPage eq pageNum}">
+				                                		<a class="page-numbers current" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
+				                                	</c:if>
+				                                	<c:if test="${pagination.currentPage ne pageNum}">
+					                                	<a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
+				                                	</c:if>
+				                                </c:forEach>
+				                                <c:if test="${pagination.next}">
+					                                <a class="next page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${pagination.endPage+1}&size=${pagination.postsPerPage}'/>">
+					                                    <span class="lnr lnr-arrow-right"></span>
+					                                </a>
+				                                </c:if>
 				                            </div>
 				                        </nav>
 				                    </div>

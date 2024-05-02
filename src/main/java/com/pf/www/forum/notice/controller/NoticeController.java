@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.pf.www.forum.notice.service.BoardService;
+import com.pf.www.forum.notice.util.Pagination;
 
 @Controller
 public class NoticeController {
@@ -17,10 +18,17 @@ public class NoticeController {
 	BoardService boardService;
 	
 	@RequestMapping("/forum//notice/listPage.do")
-	public ModelAndView listPage(@RequestParam HashMap<String, String> params) {
+	public ModelAndView listPage(@RequestParam HashMap<String, String> params,
+			@RequestParam(defaultValue="1") Integer page,
+			@RequestParam(defaultValue="10") Integer size
+			) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
-		mv.addObject("list", boardService.findAllBoards(params));
+		mv.addObject("list", boardService.findAllBoards(page, size));
+		
+		// 추후 게시판 타입에 따라 cntTotalBoards에 인자를 넘길 수 있음
+		mv.addObject("pagination", new Pagination(boardService.cntTotalBoards(), page, size));
+		
 		mv.setViewName("forum/notice/list");
 		
 		return mv;
