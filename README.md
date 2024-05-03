@@ -24,10 +24,12 @@
 
 예) `한 페이지 당 게시물 개수`가 `5`인 경우
 
+```
 (1) `전체 게시물 개수`가 `1`, `2`, `3`, `4`, `5`인 경우에는 페이지가 `1`개가 필요
 (2) `전체 게시물 개수`가 `6`, `7`, `8`, `9`, `10`인 경우에는 페이지가 `2`개가 필요
 (3) `전체 게시물 개수`가 `11`, `12`, `13`, `14`, `15`인 경우에는 페이지가 `3`개가 필요
 ...
+```
 
 `전체 게시물 개수`가 `한 페이지 당 게시물 개수`의 배수가 되는 시점에 필요한 페이지의 개수가 올라가는 것을 확인할 수 있다. 따라서 `한 페이지 당 게시물 개수`로 나눈 몫이 일정해야 한다. 하지만 `1`, `2`, `3`, `4`의 경우는 `0`이지만 `5` 혼자만 `1`이다. `0`부터 `4`까지는 몫이 `0`이기 때문에 `전체 게시물 개수`에서 `1`을 빼준다.
 
@@ -237,13 +239,13 @@ public ModelAndView listPage(
 ```
 org.apache.jasper.JasperException: 행 [93]에서 [/WEB-INF/views/forum/notice/list.jsp]을(를) 처리하는 중 예외 발생
 
-90: 				                                </c:if>
-91: 				                                <c:forEach var="pageNum" begin="${pagination.startPage}" end="${pagination.endPage}">
-92: 				                                	<c:if test="${pagination.currentPage eq pageNum}">
-93: 				                                		<a class="page-numbers current" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
-94: 				                                	</c:if>
-95: 				                                	<c:if test="${pagination.currentPage ne pageNum}">
-96: 					                                	<a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
+90: </c:if>
+91:   <c:forEach var="pageNum" begin="${pagination.startPage}" end="${pagination.endPage}">
+92:     <c:if test="${pagination.currentPage eq pageNum}">
+93:       <a class="page-numbers current" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
+94:     </c:if>
+95:     <c:if test="${pagination.currentPage ne pageNum}">
+96:       <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${pageNum}&size=${pagination.postsPerPage}'/>">${pageNum}</a>
 
 javax.el.PropertyNotFoundException: [postsPerPage] 특성이 [com.pf.www.forum.notice.util.Pagination] 유형에 없습니다.
 ```
