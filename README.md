@@ -152,6 +152,27 @@ public class Pagination {
 }
 ```
 
+### 게시물 별 좋아요/싫어요 조회
+
+`NoticeController` ➭ `BoardService` ➭ `BoardDao`
+`readPage()` ➭ `findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq()` ➭ `findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `member_seq`는 `session`에서 갖고 온다.
+
+### 게시물 별 좋아요/싫어요 반영
+
+좋아요/싫어요를 반영할 때 필수적으로 그리고 선택적으로 필요한 값은 다음과 같다.
+
+- 필수: `board_seq`, `board_type_seq`, `member_seq`
+- 선택: `member_id`, `IP` 등
+
+이때, `member_seq`, `member_id`가 둘다 고유하다면 둘 중 어떤 것이든 필수 값으로 사용해도 된다.
+
+`RestNoticeController` ➭ `BoardService` ➭ `BoardDao`
+`vote()` ➭ `addVote()` ➭ `addVote()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `member_seq`는 `session`에서 갖고 온다.
+
 ## 🔨 기능 요구사항
 
 ### 프로젝트 환경 설정하기

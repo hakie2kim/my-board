@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.pf.www.forum.notice.dao.BoardDao;
@@ -19,11 +20,23 @@ public class BoardService {
 		return boardDao.findAll(startBoardSeq, postsPerPage);
 	}
 	
-	public BoardDto findBoardByBoardSeq(String boardSeq) {
-		return boardDao.findBoardByBoardSeq(boardSeq);
+	public BoardDto findBoardByBoardSeqAndBoardTypeSeq(Integer boardSeq, Integer boardTypeSeq) {
+		return boardDao.findBoardByBoardSeqAndBoardTypeSeq(boardSeq, boardTypeSeq);
 	}
 
 	public int cntTotalBoards() {
 		return boardDao.cntTotalBoards();
+	}
+
+	public String findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq) {
+		try {
+			return boardDao.findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(boardSeq, boardTypeSeq, memberSeq);
+		} catch (EmptyResultDataAccessException e) {
+			return "Empty";
+		}
+	}
+	
+	public int addVote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, String isLike) {
+		return boardDao.addVote(boardSeq, boardTypeSeq, memberSeq, isLike);
 	}
 }

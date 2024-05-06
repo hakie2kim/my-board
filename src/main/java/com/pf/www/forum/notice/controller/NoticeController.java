@@ -3,6 +3,9 @@ package com.pf.www.forum.notice.controller;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,10 +47,21 @@ public class NoticeController {
 	}
 	
 	@RequestMapping("/forum/notice/readPage.do")
-	public ModelAndView readPage(@RequestParam HashMap<String, String> params) {
+	public ModelAndView readPage(
+			@RequestParam HashMap<String, String> params,
+			@RequestParam(defaultValue="1") Integer boardSeq,
+			@RequestParam(defaultValue="1") Integer boardTypeSeq,
+			HttpServletRequest request
+			) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
-		mv.addObject("board", boardService.findBoardByBoardSeq(params.get("boardSeq")));
+		mv.addObject("board", boardService.findBoardByBoardSeqAndBoardTypeSeq(boardSeq, boardTypeSeq));
+		
+		HttpSession session = request.getSession();
+		Integer memberSeq = (Integer) session.getAttribute("memberSeq");
+		// 회원가입 기능 연결: 1 -> memberSeq
+		mv.addObject("isLike", boardService.findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(boardSeq, boardTypeSeq, 1));
+		
 		mv.setViewName("forum/notice/read");
 		
 		return mv;

@@ -29,13 +29,13 @@ public class BoardDao extends JdbcTemplate {
 		return query(sql, boardRowMapper(), args);
 	}
 	
-	public BoardDto findBoardByBoardSeq(String boardSeq) {
+	public BoardDto findBoardByBoardSeqAndBoardTypeSeq(Integer boardSeq, Integer boardTypeSeq) {
 		String sql = "SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id "
 				+ "FROM forum.`board` b "
 				+ "JOIN forum.`member` m "
 				+ "ON b.reg_member_seq = m.member_seq "
-				+ "WHERE b.board_seq = ?; ";
-		Object[] args = {boardSeq};
+				+ "WHERE b.board_seq = ? AND b.board_type_seq = ?; ";
+		Object[] args = {boardSeq, boardTypeSeq};
 		return queryForObject(sql, boardRowMapper(), args);
 	}
 	
@@ -62,5 +62,21 @@ public class BoardDao extends JdbcTemplate {
 	public int cntTotalBoards() {
 		String sql = "SELECT COUNT(*) FROM forum.`board`";
 		return queryForObject(sql, Integer.class);
+	}
+
+	public String findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq) {
+		String sql = "SELECT is_like "
+				+ "FROM forum.board_vote "
+				+ "WHERE board_seq = ? AND board_type_seq = ? AND member_seq = ?; ";
+		Object[] args = {boardSeq, boardTypeSeq, memberSeq};
+		return queryForObject(sql, String.class, args);
+	}
+	
+	public int addVote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, String isLike) {
+		String sql = "INSERT INTO forum.board_vote "
+				+ "(board_seq, board_type_seq, member_seq, is_like, reg_dtm) "
+				+ "VALUES(?, ?, ?, ?, DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')); ";
+		Object[] args = {boardSeq, boardTypeSeq, memberSeq, isLike};
+		return update(sql, args);
 	}
 }

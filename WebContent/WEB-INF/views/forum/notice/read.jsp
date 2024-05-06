@@ -44,6 +44,41 @@ String ctx = request.getContextPath();
 	    $('#trumbowyg-demo').trumbowyg({
 	        lang: 'kr'
 	    });
+	    
+	    function vote(boardSeq, boardTypeSeq, isLike) {	    	
+	    	let url = "<%=ctx%>/forum/notice";
+	    	url += "/" + boardSeq;
+	    	url += "/" + boardTypeSeq;
+	    	url += "/" + isLike;
+	    	url += "/vote.do";
+	    	
+	    	$.ajax({    
+	    		type : "post",           
+	    		// 타입 (get, post, put 등등)    
+	    		url : url,
+	    		// 요청할 서버url
+	    		// async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json"
+	    			// "X-HTTP-Method-Override" : "POST"
+	    		},
+	    		dataType : "text",
+    			// 결과 성공 콜백함수 
+	    		success : function(result) {
+	    			if (result === 1 && isLike === 'Y') {
+	    				$('a#cThumbsUpAnchor').addClass('active');
+	    			} else if (result === 1 && isLike === 'N') {
+	    				$('a#cThumbsDownAnchor').addClass('active');
+	    			}
+	    		},
+    			// 결과 에러 콜백함수
+	    		error : function(request, status, error) {
+	    			console.log(error);
+	    		}
+	    	});
+	    }
 	</script>
 </head>
 
@@ -61,10 +96,10 @@ String ctx = request.getContextPath();
                                 <h3>${board.title}</h3>
 
                                 <div class="vote">
-                                    <a href="#">
+                                    <a href="#" id="cThumbsUpAnchor" onClick="javascript:vote(${board.boardSeq}, ${board.boardTypeSeq}, 'Y')" <c:if test="${isLike eq 'Y'}">class="active"</c:if>>
                                         <span class="lnr lnr-thumbs-up"></span>
                                     </a>
-                                    <a href="#">
+                                    <a href="#" id="cThumbsDownAnchor" onClick="javascript:vote(${board.boardSeq}, ${board.boardTypeSeq}, 'N')" <c:if test="${isLike eq 'N'}">class="active"</c:if>>
                                         <span class="lnr lnr-thumbs-down"></span>
                                     </a>
                                 </div>
