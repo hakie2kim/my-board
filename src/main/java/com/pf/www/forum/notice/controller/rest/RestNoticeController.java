@@ -28,6 +28,6 @@ public class RestNoticeController {
 		HttpSession session = request.getSession();
 		Integer memberSeq = (Integer) session.getAttribute("memberSeq");
 		// 회원가입 기능 연결: 1 -> memberSeq		
-		return boardService.addVote(boardSeq, boardTypeSeq, 1, isLike);
+		return boardService.vote(boardSeq, boardTypeSeq, 1, isLike);
 	}
 }

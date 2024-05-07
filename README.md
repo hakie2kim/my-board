@@ -169,7 +169,9 @@ public class Pagination {
 이때, `member_seq`, `member_id`가 둘다 고유하다면 둘 중 어떤 것이든 필수 값으로 사용해도 된다.
 
 `RestNoticeController` ➭ `BoardService` ➭ `BoardDao`
-`vote()` ➭ `addVote()` ➭ `addVote()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- 좋아요/싫어요를 처음 누르는 경우: `vote()` ➭ `addVote()` ➭ `addVote()` (파라미터, 리턴 타입 추후 보완 예정)
+- 좋아요/싫어요가 이미 있는 경우: `vote()` ➭ `updateVote()` ➭ `addVote()`(파라미터, 리턴 타입 추후 보완 예정)
 
 - `member_seq`는 `session`에서 갖고 온다.
 
@@ -274,6 +276,34 @@ javax.el.PropertyNotFoundException: [postsPerPage] 특성이 [com.pf.www.forum.n
 #### 해결 방법
 
 `EL`은 객체의 값을 `${객체주소.필드}`와 같이 조회할 때 해당 클래스에 `getter`가 있는지 확인한다. 없는 경우 위와 같은 에러가 발생한다.
+
+### 게시물 별 좋아요/싫어요 반영
+
+#### 문제 상황
+
+`INSERT` 쿼리만을 통해 게시물 별 좋아요/싫어요를 반영할 때 사용자가 처음으로 좋아요 또는 싫어요를 누를 때는 문제가 없었지만 그 다음 좋아요 또는 싫어요를 누를 때는 같은 문제가 발생했다.
+
+```
+org.springframework.dao.DuplicateKeyException
+SQL [INSERT INTO forum.board_vote (board_seq, board_type_seq, member_seq, is_like, reg_dtm) VALUES(?, ?, ?, ?, DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')); ];
+Duplicate entry '1-1-1' for key 'board_vote.PRIMARY';
+```
+
+`board_vote`의 `pk`는 `(board_seq, board_type_seq, member_seq)`와 같다. 사용자가 좋아요/싫어요를 처음이 아닌 경우 클릭할 때 이미 존재하는 `pk`로 또 다시 `INSERT`를 하려 하기 때문에 위와 같은 에러가 발생하는 것이다.
+
+#### 해결 방법
+
+위와 같은 에러가 발생하는 경우를 service 계층에서 try-catch문으로 잡아 INSERT 대신 UPDATE로 쿼리를 실행했다.
+
+```java
+public int vote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, String isLike) {
+	try { // 처음 좋아요/싫어요를 하는 경우
+		return boardDao.addVote(boardSeq, boardTypeSeq, memberSeq, isLike);
+	} catch (DuplicateKeyException de) { // 좋아요/싫어요가 이미 있는 경우
+		return boardDao.updateVote(boardSeq, boardTypeSeq, memberSeq, isLike);
+	}
+}
+```
 
 ## 📝 메모
 

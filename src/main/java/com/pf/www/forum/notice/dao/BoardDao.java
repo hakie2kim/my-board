@@ -79,4 +79,12 @@ public class BoardDao extends JdbcTemplate {
 		Object[] args = {boardSeq, boardTypeSeq, memberSeq, isLike};
 		return update(sql, args);
 	}
+
+	public int updateVote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, String isLike) {
+		String sql = "UPDATE forum.board_vote "
+				+ "SET is_like=?, reg_dtm = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') "
+				+ "WHERE board_seq=? AND board_type_seq=? AND member_seq=?;";
+		Object[] args = {isLike, boardSeq, boardTypeSeq, memberSeq};
+		return update(sql, args);
+	}
 }
