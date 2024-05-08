@@ -34,15 +34,26 @@ String ctx = request.getContextPath();
     <link rel="icon" type="image/png" sizes="16x16" href="<%=ctx%>/assest/template/images/favicon.png">    
 	<script type="text/javascript">
 		var ctx = '<%= request.getContextPath() %>';
-	</script>	
+	</script>
+	<!-- 추가 시작 -->
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<!-- 추가 끝 -->
 	<script src="<%=ctx%>/assest/js/page.js"></script>
 	<link rel="stylesheet" href="<%=ctx%>/assest/template/css/trumbowyg.min.css">
     <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg.min.js"></script>
     <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg/ko.js"></script>
     <script type="text/javascript">
-	    $('#trumbowyg-demo').trumbowyg({
+	    $('#trumbowyg-demo')
+	    .trumbowyg({
 	        lang: 'kr'
-	    });
+	    })
+	    
+	    window.onload = function() {
+	    	$('#trumbowyg-demo').on('tbwchange', function(){ 
+	    		// console.log($('#content').value = $(this).text());
+				$('#content').val($(this).text());
+	    	});
+	    }
 	</script>
 </head>
 
@@ -55,14 +66,15 @@ String ctx = request.getContextPath();
             <div class="row">
                 <div class="col-lg-12">
                     <div class="question-form cardify p-4">
-                        <form action="#">
+                        <form action="<c:url value='/forum/notice/write.do' />" method="post">
                             <div class="form-group">
                                 <label>제목</label>
-                                <input type="text" placeholder="Enter title here" required>
+                                <input type="text" name="title" placeholder="Enter title here" required>
                             </div>
                             <div class="form-group">
                                 <label>Description</label>
                                 <div id="trumbowyg-demo"></div>
+                                <input type="hidden" id="content" name="content" />
                             </div>
                             <div class="form-group">
                                 <div class="attachments">
@@ -114,6 +126,5 @@ String ctx = request.getContextPath();
     <script src="<%=ctx%>/assest/template/js/map.js"></script>
     <!-- endinject -->
 </body>
-
 </html>
 	

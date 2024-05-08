@@ -44,4 +44,8 @@ public class BoardService {
 			return boardDao.updateVote(boardSeq, boardTypeSeq, memberSeq, isLike);
 		}
 	}
+
+	public int addBoard(BoardDto boardDto) {
+		return boardDao.addBoard(boardDto);
+	}
 }

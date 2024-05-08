@@ -8,10 +8,13 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.pf.www.forum.notice.dto.BoardDto;
 import com.pf.www.forum.notice.service.BoardService;
 import com.pf.www.forum.notice.util.Pagination;
 
@@ -44,6 +47,26 @@ public class NoticeController {
 		mv.setViewName("forum/notice/write");
 		
 		return mv;
+	}
+	
+	
+	@PostMapping("/forum/notice/write.do")
+	public String write(
+			// @RequestParam HashMap<String, String> params,
+			@ModelAttribute BoardDto boardDto,
+			HttpServletRequest request
+			) {
+		// System.out.println(params);
+		
+		// 추후 변경 예정
+		boardDto.setBoardTypeSeq(1);
+		HttpSession session = request.getSession();
+		Integer memberSeq = (Integer) session.getAttribute("memberSeq");
+		boardDto.setRegMemberSeq(67);
+		
+		boardService.write(boardDto);
+		
+		return "redirect:/forum//notice/listPage.do";
 	}
 	
 	@RequestMapping("/forum/notice/readPage.do")

@@ -157,7 +157,7 @@ public class Pagination {
 `NoticeController` ➭ `BoardService` ➭ `BoardDao`
 `readPage()` ➭ `findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq()` ➭ `findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq()` (파라미터, 리턴 타입 추후 보완 예정)
 
-- `member_seq`는 `session`에서 갖고 온다.
+`member_seq`는 `session`에서 갖고 온다.
 
 ### 게시물 별 좋아요/싫어요 반영
 
@@ -171,9 +171,14 @@ public class Pagination {
 `RestNoticeController` ➭ `BoardService` ➭ `BoardDao`
 
 - 좋아요/싫어요를 처음 누르는 경우: `vote()` ➭ `addVote()` ➭ `addVote()` (파라미터, 리턴 타입 추후 보완 예정)
-- 좋아요/싫어요가 이미 있는 경우: `vote()` ➭ `updateVote()` ➭ `addVote()`(파라미터, 리턴 타입 추후 보완 예정)
+- 좋아요/싫어요가 이미 있는 경우: `vote()` ➭ `updateVote()` ➭ `addVote()` (파라미터, 리턴 타입 추후 보완 예정)
 
-- `member_seq`는 `session`에서 갖고 온다.
+`member_seq`는 `session`에서 갖고 온다.
+
+### 게시물 쓰기
+
+`RestNoticeController` ➭ `BoardService` ➭ `BoardDao`
+`write()` ➭ `write()` ➭ `addBoard()` (파라미터, 리턴 타입 추후 보완 예정)
 
 ## 🔨 기능 요구사항
 
@@ -193,7 +198,7 @@ public class Pagination {
 
 - [x] 게시물 단건 조회 페이지 : `/forum/notice/readPage.do`
 
-- [ ] 게시물 쓰기 페이지 : `/forum/notice/writePage.do`
+- [x] 게시물 쓰기 페이지 : `/forum/notice/writePage.do`
 
 ### 예외 처리
 
@@ -275,7 +280,7 @@ javax.el.PropertyNotFoundException: [postsPerPage] 특성이 [com.pf.www.forum.n
 
 #### 해결 방법
 
-`EL`은 객체의 값을 `${객체주소.필드}`와 같이 조회할 때 해당 클래스에 `getter`가 있는지 확인한다. 없는 경우 위와 같은 에러가 발생한다.
+`EL`은 객체의 값을 `${객체주소.필드}`와 같이 조회할 때 해당 클래스에 `getter`가 있는지 확인한다. 없는 경우 위와 같은 에러가 발생한다. 따라서 `Pagination`에 `getPostsPerPage()` 메서드를 추가해주었다.
 
 ### 게시물 별 좋아요/싫어요 반영
 

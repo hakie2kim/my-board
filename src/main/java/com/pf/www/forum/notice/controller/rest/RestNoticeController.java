@@ -1,12 +1,17 @@
 package com.pf.www.forum.notice.controller.rest;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pf.www.forum.notice.dto.BoardDto;
 import com.pf.www.forum.notice.service.BoardService;
 
 @RestController

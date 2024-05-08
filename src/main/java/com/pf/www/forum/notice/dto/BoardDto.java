@@ -103,4 +103,12 @@ public class BoardDto {
 	public void setMemberId(String memberId) {
 		this.memberId = memberId;
 	}
+
+	@Override
+	public String toString() {
+		return "BoardDto [boardSeq=" + boardSeq + ", boardTypeSeq=" + boardTypeSeq + ", title=" + title + ", content="
+				+ content + ", hit=" + hit + ", delYn=" + delYn + ", regDtm=" + regDtm + ", regMemberSeq="
+				+ regMemberSeq + ", updateDtm=" + updateDtm + ", updateMemberSeq=" + updateMemberSeq + ", memberId="
+				+ memberId + "]";
+	}
 }

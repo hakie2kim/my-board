@@ -87,4 +87,12 @@ public class BoardDao extends JdbcTemplate {
 		Object[] args = {isLike, boardSeq, boardTypeSeq, memberSeq};
 		return update(sql, args);
 	}
+
+	public int addBoard(BoardDto boardDto) {
+		String sql = "INSERT INTO forum.board "
+				+ "(board_type_seq, title, content, reg_dtm, reg_member_seq) "
+				+ "VALUES(?, ?, ?, DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), ?);";
+		Object[] args = {boardDto.getBoardTypeSeq(), boardDto.getTitle(), boardDto.getContent(), boardDto.getRegMemberSeq()};
+		return update(sql, args);		
+	}
 }
