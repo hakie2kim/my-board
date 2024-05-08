@@ -67,10 +67,16 @@ String ctx = request.getContextPath();
 	    		dataType : "text",
     			// 결과 성공 콜백함수 
 	    		success : function(result) {
-	    			if (result === 1 && isLike === 'Y') {
+	    			// console.log(typeof result);
+	    			if (result === '1' && isLike === 'Y') {
 	    				$('a#cThumbsUpAnchor').addClass('active');
-	    			} else if (result === 1 && isLike === 'N') {
+	    				$('a#cThumbsDownAnchor').removeClass('active');
+	    			} else if (result === '1' && isLike === 'N') {
+	    				$('a#cThumbsUpAnchor').removeClass('active');
 	    				$('a#cThumbsDownAnchor').addClass('active');
+	    			} else if (result === '2') {
+	    				$('a#cThumbsUpAnchor').removeClass('active');
+	    				$('a#cThumbsDownAnchor').removeClass('active');
 	    			}
 	    		},
     			// 결과 에러 콜백함수

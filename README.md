@@ -170,8 +170,9 @@ public class Pagination {
 
 `RestNoticeController` ➭ `BoardService` ➭ `BoardDao`
 
-- 좋아요/싫어요를 처음 누르는 경우: `vote()` ➭ `addVote()` ➭ `addVote()` (파라미터, 리턴 타입 추후 보완 예정)
-- 좋아요/싫어요가 이미 있는 경우: `vote()` ➭ `updateVote()` ➭ `addVote()` (파라미터, 리턴 타입 추후 보완 예정)
+- 좋아요/싫어요를 처음 누르는 경우: `vote()` ➭ `vote()` ➭ `addVote()` (파라미터, 리턴 타입 추후 보완 예정)
+- 좋아요 또는 싫어요가 이미 있는 경우: `vote()` ➭ `vote()` ➭ `updateVote()` (파라미터, 리턴 타입 추후 보완 예정)
+- 이미 누른 좋아요/싫어요를 다시 한 번 더 누를 경우: `vote()` ➭ `vote()` ➭ `cntVote()`, `deleteVote()` (파라미터, 리턴 타입 추후 보완 예정)
 
 `member_seq`는 `session`에서 갖고 온다.
 
@@ -194,11 +195,19 @@ public class Pagination {
 
 ### Servlet 구성 및 접속
 
+#### `NoticeController`
+
 - [x] 게시물 목록 페이지 : `/forum//notice/listPage.do`
 
 - [x] 게시물 단건 조회 페이지 : `/forum/notice/readPage.do`
 
 - [x] 게시물 쓰기 페이지 : `/forum/notice/writePage.do`
+
+- [x] 게시물 쓰기 : `/forum/notice/write.do`
+
+#### `RestNoticeController`
+
+- [x] 게시물 별 좋아요/싫어요 반영: `/forum/notice/{boardSeq}/{boardTypeSeq}/{isLike}/vote.do`
 
 ### 예외 처리
 
