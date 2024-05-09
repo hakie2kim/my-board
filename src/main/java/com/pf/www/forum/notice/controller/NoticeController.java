@@ -82,6 +82,7 @@ public class NoticeController {
 		
 		HttpSession session = request.getSession();
 		Integer memberSeq = (Integer) session.getAttribute("memberSeq");
+		System.out.println("------------------" + memberSeq);
 		// 회원가입 기능 연결: 1 -> memberSeq
 		mv.addObject("isLike", boardService.findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(boardSeq, boardTypeSeq, 1));
 		

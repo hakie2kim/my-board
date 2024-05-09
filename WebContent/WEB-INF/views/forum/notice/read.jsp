@@ -49,11 +49,10 @@ String ctx = request.getContextPath();
 	    	let url = "<%=ctx%>/forum/notice";
 	    	url += "/" + boardSeq;
 	    	url += "/" + boardTypeSeq;
-	    	url += "/" + isLike;
-	    	url += "/vote.do";
+	    	url += "/vote.do?isLike=" + isLike;
 	    	
 	    	$.ajax({    
-	    		type : "post",           
+	    		type : "get",           
 	    		// 타입 (get, post, put 등등)    
 	    		url : url,
 	    		// 요청할 서버url

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +24,11 @@ public class RestNoticeController {
 	}
 
 	// 좋아요, 싫어요 테이블을 나눠서 관리 하지 않은 경우
-	@PostMapping("/forum/notice/{boardSeq}/{boardTypeSeq}/{isLike}/vote.do")
+	@GetMapping("/forum/notice/{boardSeq}/{boardTypeSeq}/vote.do")
 	public int vote(
 			@PathVariable Integer boardSeq, 
 			@PathVariable Integer boardTypeSeq, 
-			@PathVariable String isLike,
+			@RequestParam String isLike,
 			HttpServletRequest request
 			) {
 		HttpSession session = request.getSession();
