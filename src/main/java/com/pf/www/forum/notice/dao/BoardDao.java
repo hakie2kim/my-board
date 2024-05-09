@@ -95,6 +95,13 @@ public class BoardDao extends JdbcTemplate {
 		Object[] args = {boardDto.getBoardTypeSeq(), boardDto.getTitle(), boardDto.getContent(), boardDto.getRegMemberSeq()};
 		return update(sql, args);		
 	}
+	
+	public int cntVote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq) {
+		String sql = "SELECT COUNT(*) FROM forum.board_vote "
+				+ "WHERE board_seq=? AND board_type_seq=? AND member_seq=?;";
+		Object[] args = {boardSeq, boardTypeSeq, memberSeq};
+		return queryForObject(sql, Integer.class, args);
+	}
 
 	public int cntVote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, String isLike) {
 		String sql = "SELECT COUNT(*) FROM forum.board_vote "

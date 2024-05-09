@@ -291,7 +291,7 @@ javax.el.PropertyNotFoundException: [postsPerPage] 특성이 [com.pf.www.forum.n
 
 `EL`은 객체의 값을 `${객체주소.필드}`와 같이 조회할 때 해당 클래스에 `getter`가 있는지 확인한다. 없는 경우 위와 같은 에러가 발생한다. 따라서 `Pagination`에 `getPostsPerPage()` 메서드를 추가해주었다.
 
-### 게시물 별 좋아요/싫어요 반영
+### 게시물 별 좋아요/싫어요 반영 (1)
 
 #### 문제 상황
 
@@ -307,15 +307,49 @@ Duplicate entry '1-1-1' for key 'board_vote.PRIMARY';
 
 #### 해결 방법
 
-위와 같은 에러가 발생하는 경우를 service 계층에서 try-catch문으로 잡아 INSERT 대신 UPDATE로 쿼리를 실행했다.
+위와 같은 에러가 발생하는 경우를 `service` 계층에서 `try-catch`문으로 잡아 `INSERT` 대신 `UPDATE`로 쿼리를 실행했다.
 
 ```java
 public int vote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, String isLike) {
 	try { // 처음 좋아요/싫어요를 하는 경우
 		return boardDao.addVote(boardSeq, boardTypeSeq, memberSeq, isLike);
-	} catch (DuplicateKeyException de) { // 좋아요/싫어요가 이미 있는 경우
+	} catch (DuplicateKeyException dke) { // 좋아요/싫어요가 이미 있는 경우
+		// 같은 좋아요 또는 싫어요를 한번 더 눌렀을 경우
+		if (boardDao.cntVote(boardSeq, boardTypeSeq, memberSeq, isLike) == 1) {
+			boardDao.deleteVote(boardSeq, boardTypeSeq, memberSeq);
+			return 2;
+		}
+
+		// 좋아요 -> 싫어요 OR 싫어요 -> 좋아요
 		return boardDao.updateVote(boardSeq, boardTypeSeq, memberSeq, isLike);
 	}
+}
+```
+
+### 게시물 별 좋아요/싫어요 반영 (2)
+
+#### 문제 상황
+
+하지만 (1)과 같은 해결 방법은 좋아요/싫어요를 누를 때마다 예외 객체를 생성하는 문제가 발생한다. 이와 같은 예외 객체는 `Stack`과 `Heap`에 쌓이게 되는데 다량의 좋아요/싫어요 클릭이 발생할 경우 `StackOverflow`가 발생할 수도 있기 떄문에 다음과 같이 변경했다.
+
+#### 해결 방법
+
+```java
+public int vote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, String isLike) {
+		// 처음 좋아요/싫어요를 하는 경우
+		if (boardDao.cntVote(boardSeq, boardTypeSeq, memberSeq) == 0) {
+			return boardDao.addVote(boardSeq, boardTypeSeq, memberSeq, isLike);
+		// 좋아요/싫어요가 이미 있는 경우
+		} else { // boardDao.cntVote(boardSeq, boardTypeSeq, memberSeq) == 1
+			// 같은 좋아요 또는 싫어요를 한번 더 눌렀을 경우
+			if (boardDao.cntVote(boardSeq, boardTypeSeq, memberSeq, isLike) == 1) {
+				boardDao.deleteVote(boardSeq, boardTypeSeq, memberSeq);
+				return 2;
+			}
+
+			// 좋아요 -> 싫어요 OR 싫어요 -> 좋아요
+			return boardDao.updateVote(boardSeq, boardTypeSeq, memberSeq, isLike);
+		}
 }
 ```
 

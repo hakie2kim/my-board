@@ -38,7 +38,7 @@ public class BoardService {
 	}
 	
 	public int vote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, String isLike) {
-		try { // 처음 좋아요/싫어요를 하는 경우
+		/*try { // 처음 좋아요/싫어요를 하는 경우
 			return boardDao.addVote(boardSeq, boardTypeSeq, memberSeq, isLike);
 		} catch (DuplicateKeyException dke) { // 좋아요/싫어요가 이미 있는 경우
 			// 같은 좋아요 또는 싫어요를 한번 더 눌렀을 경우
@@ -47,6 +47,21 @@ public class BoardService {
 				return 2;
 			}
 			
+			return boardDao.updateVote(boardSeq, boardTypeSeq, memberSeq, isLike);
+		}*/
+		
+		// 처음 좋아요/싫어요를 하는 경우
+		if (boardDao.cntVote(boardSeq, boardTypeSeq, memberSeq) == 0) {
+			return boardDao.addVote(boardSeq, boardTypeSeq, memberSeq, isLike);
+		// 좋아요/싫어요가 이미 있는 경우	
+		} else { // boardDao.cntVote(boardSeq, boardTypeSeq, memberSeq) == 1
+			// 같은 좋아요 또는 싫어요를 한번 더 눌렀을 경우
+			if (boardDao.cntVote(boardSeq, boardTypeSeq, memberSeq, isLike) == 1) {
+				boardDao.deleteVote(boardSeq, boardTypeSeq, memberSeq);
+				return 2;
+			}
+			
+			// 좋아요 -> 싫어요 OR 싫어요 -> 좋아요
 			return boardDao.updateVote(boardSeq, boardTypeSeq, memberSeq, isLike);
 		}
 	}
