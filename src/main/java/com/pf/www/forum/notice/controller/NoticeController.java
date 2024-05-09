@@ -90,5 +90,38 @@ public class NoticeController {
 		
 		return mv;
 	}
+	
+	@RequestMapping("/forum/notice/modifyPage.do")
+	public ModelAndView modifyPage(
+		@RequestParam HashMap<String, String> params,
+		@RequestParam(defaultValue="1") Integer boardSeq,
+		@RequestParam(defaultValue="1") Integer boardTypeSeq
+	) {
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
+		mv.addObject("board", boardService.findBoardByBoardSeqAndBoardTypeSeq(boardSeq, boardTypeSeq));
+		mv.setViewName("forum/notice/modify");
+		
+		return mv;
+	}
+	
+	@PostMapping("/forum/notice/modify.do")
+	public String modfiy(
+			// @RequestParam HashMap<String, String> params,
+			@ModelAttribute BoardDto boardDto,
+			HttpServletRequest request
+			) {
+		// System.out.println(params);
+		
+		// 추후 변경 예정
+		boardDto.setBoardTypeSeq(1);
+		HttpSession session = request.getSession();
+		Integer memberSeq = (Integer) session.getAttribute("memberSeq");
+		boardDto.setUpdateMemberSeq(67);
+		
+		boardService.modfiy(boardDto);
+		
+		return "redirect:/forum//notice/listPage.do";
+	}
 
 }

@@ -99,8 +99,10 @@ String ctx = request.getContextPath();
                         <div class="cardify forum--issue">
                             <div class="title_vote clearfix">
                                 <h3>${board.title}</h3>
-
-                                <div class="vote">
+								<a href="<c:url value='/forum/notice/modifyPage.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}'/>">
+									<button class="btn btn--round btn--bordered btn-sm btn-secondary">수정</button>
+								</a>
+								<div class="vote">
                                     <a href="#" id="cThumbsUpAnchor" onClick="javascript:vote(${board.boardSeq}, ${board.boardTypeSeq}, 'Y')" <c:if test="${isLike eq 'Y'}">class="active"</c:if>>
                                         <span class="lnr lnr-thumbs-up"></span>
                                     </a>

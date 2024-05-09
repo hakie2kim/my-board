@@ -65,7 +65,7 @@ String ctx = request.getContextPath();
 	                                        	<tr>
 	                                                <td>${board.boardSeq}</td>
 	                                                <td>
-	                                                	<a href="<c:url value='/forum/notice/readPage.do?boardSeq=${board.boardSeq}'/>">
+	                                                	<a href="<c:url value='/forum/notice/readPage.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}'/>">
 	                                                		${board.title}
 	                                                	</a>
 	                                                </td>

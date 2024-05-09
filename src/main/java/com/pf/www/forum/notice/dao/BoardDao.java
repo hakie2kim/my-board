@@ -96,6 +96,14 @@ public class BoardDao extends JdbcTemplate {
 		return update(sql, args);		
 	}
 	
+	public int updateBoard(BoardDto boardDto) {
+		String sql = "UPDATE forum.board "
+				+ "SET title=?, content=?, update_dtm = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), update_member_seq=? "
+				+ "WHERE board_seq=? AND board_type_seq=?;";
+		Object[] args = {boardDto.getTitle(), boardDto.getContent(), boardDto.getUpdateMemberSeq(), boardDto.getBoardSeq(), boardDto.getBoardTypeSeq()};
+		return update(sql, args);		
+	}
+	
 	public int cntVote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq) {
 		String sql = "SELECT COUNT(*) FROM forum.board_vote "
 				+ "WHERE board_seq=? AND board_type_seq=? AND member_seq=?;";
@@ -116,4 +124,5 @@ public class BoardDao extends JdbcTemplate {
 		Object[] args = {boardSeq, boardTypeSeq, memberSeq};
 		return update(sql, args);
 	}
+	
 }

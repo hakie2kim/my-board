@@ -181,6 +181,11 @@ public class Pagination {
 `RestNoticeController` ➭ `BoardService` ➭ `BoardDao`
 `write()` ➭ `write()` ➭ `addBoard()` (파라미터, 리턴 타입 추후 보완 예정)
 
+### 게시물 수정
+
+`NoticeController` ➭ `BoardService` ➭ `BoardDao`
+`modify()` ➭ `modify()` ➭ `updateBoard()` (파라미터, 리턴 타입 추후 보완 예정)
+
 ## 🔨 기능 요구사항
 
 ### 프로젝트 환경 설정하기
@@ -204,6 +209,10 @@ public class Pagination {
 - [x] 게시물 쓰기 페이지 : `/forum/notice/writePage.do`
 
 - [x] 게시물 쓰기 : `/forum/notice/write.do`
+
+- [x] 게시물 수정 페이지 : `/forum/notice/modifyPage.do`
+
+- [x] 게시물 수정 : `/forum/notice/modify.do`
 
 #### `RestNoticeController`
 

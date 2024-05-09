@@ -69,4 +69,8 @@ public class BoardService {
 	public int write(BoardDto boardDto) {
 		return boardDao.addBoard(boardDto);
 	}
+	
+	public int modfiy(BoardDto boardDto) {
+		return boardDao.updateBoard(boardDto);
+	}
 }
