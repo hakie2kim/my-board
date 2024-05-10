@@ -37,6 +37,7 @@ String ctx = request.getContextPath();
 	</script>
 	<!-- 추가 시작 -->
 	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<%-- <script src="<%=ctx%>/assest/template/js/vendor/jquery/jquery-1.12.3.js"></script> --%>
 	<!-- 추가 끝 -->
 	<script src="<%=ctx%>/assest/js/page.js"></script>
 	<link rel="stylesheet" href="<%=ctx%>/assest/template/css/trumbowyg.min.css">

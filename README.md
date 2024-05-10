@@ -300,6 +300,39 @@ javax.el.PropertyNotFoundException: [postsPerPage] 특성이 [com.pf.www.forum.n
 
 `EL`은 객체의 값을 `${객체주소.필드}`와 같이 조회할 때 해당 클래스에 `getter`가 있는지 확인한다. 없는 경우 위와 같은 에러가 발생한다. 따라서 `Pagination`에 `getPostsPerPage()` 메서드를 추가해주었다.
 
+### 게시물 별 좋아요/싫어요 조회
+
+#### 문제 상황
+
+게시물 단건 조회 시 좋아요/싫어요 반영 여부를 확인해야 한다. `boardDao`의 `findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq()`를 통해 다음과 같은 `sql` 쿼리를 실행하게 된다.
+
+```sql
+SELECT is_like
+FROM forum.board_vote
+WHERE board_seq = ? AND board_type_seq = ? AND member_seq = ?;
+```
+
+만약 해당 레코드가 없는 경우 다음과 같은 예외가 발생한다.
+
+```
+Request processing failed; nested exception is org.springframework.dao.EmptyResultDataAccessException: Incorrect result size: expected 1, actual 0
+com.pf.www.forum.notice.dao.BoardDao.findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(BoardDao.java:72)
+```
+
+#### 해결 방법
+
+```java
+public String findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq) {
+	try {
+		return boardDao.findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(boardSeq, boardTypeSeq, memberSeq);
+	} catch (EmptyResultDataAccessException e) {
+		return "Empty";
+	}
+}
+```
+
+위와 같이 `try-catch`문을 통해 예외 처리를 해주었다. 이후 해당 `"Empty"`는 `model`로 `read.jsp`로 전달되는데 `"Empty"`인 경우에는 좋아요 또는 싫어요 어떤 것도 표시되지 않는다.
+
 ### 게시물 별 좋아요/싫어요 반영 (1)
 
 #### 문제 상황
@@ -361,6 +394,40 @@ public int vote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, Strin
 		}
 }
 ```
+
+### jQuery 또는 $ is not defined
+
+#### 문제 상황
+
+`write.jsp` 페이지 조회 후 브라우저 콘솔 창에 다음과 같은 오류를 확인했다. `Uncaught ReferenceError: jQuery is not defined`, `Uncaught ReferenceError: $ is not defined`
+
+`html`은 순차적으로 문서를 해석한다. `write.jsp`의 `<head>` 태그에는 다음과 같은 `<script>` 태그를 포함하는데 44, 45번째 줄의 `.js` 파일, 그리고 53번째 줄의 `$` 모두 `jQuery`를 필요로 한다. 하지만 `jQuery`를 불러오는 `<script>` 태그는 `<body>` 태그 안에 존재하기 때문에 이와 같은 에러가 발생한 것이다.
+
+```html
+44
+<script src="<%=ctx%>/assest/template/js/vendor/trumbowyg.min.js"></script>
+45
+<script src="<%=ctx%>/assest/template/js/vendor/trumbowyg/ko.js"></script>
+46
+<script type="text/javascript">
+  47	$('#trumbowyg-demo')
+  48	.trumbowyg({
+  49			lang: 'kr'
+  50	})
+  51
+  52	window.onload = function() {
+  53		$('#trumbowyg-demo').on('tbwchange', function(){
+  54			// console.log($('#content').value = $(this).text());
+  55			$('#content').val($(this).text());
+  56		});
+  57	}
+  58
+</script>
+```
+
+#### 해결 방법
+
+43번째 줄에 `<script src="http://code.jquery.com/jquery-latest.js"></script>`를 추가해주었다.
 
 ## 📝 메모
 
