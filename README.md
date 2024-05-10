@@ -258,6 +258,8 @@ public ModelAndView listPage(
 ) {
 ```
 
+---
+
 ### `JSP`의 `EL` 비교
 
 #### 문제 상황
@@ -277,6 +279,8 @@ public ModelAndView listPage(
 ```
 
 여기서 `pagination.currentPage`는 숫자이다.
+
+---
 
 ### `JSP`의 `EL` 값 조회
 
@@ -299,6 +303,8 @@ javax.el.PropertyNotFoundException: [postsPerPage] 특성이 [com.pf.www.forum.n
 #### 해결 방법
 
 `EL`은 객체의 값을 `${객체주소.필드}`와 같이 조회할 때 해당 클래스에 `getter`가 있는지 확인한다. 없는 경우 위와 같은 에러가 발생한다. 따라서 `Pagination`에 `getPostsPerPage()` 메서드를 추가해주었다.
+
+---
 
 ### 게시물 별 좋아요/싫어요 조회
 
@@ -332,6 +338,8 @@ public String findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(Integer boardSeq, 
 ```
 
 위와 같이 `try-catch`문을 통해 예외 처리를 해주었다. 이후 해당 `"Empty"`는 `model`로 `read.jsp`로 전달되는데 `"Empty"`인 경우에는 좋아요 또는 싫어요 어떤 것도 표시되지 않는다.
+
+---
 
 ### 게시물 별 좋아요/싫어요 반영 (1)
 
@@ -368,6 +376,8 @@ public int vote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, Strin
 }
 ```
 
+---
+
 ### 게시물 별 좋아요/싫어요 반영 (2)
 
 #### 문제 상황
@@ -394,6 +404,8 @@ public int vote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, Strin
 		}
 }
 ```
+
+---
 
 ### jQuery 또는 $ is not defined
 
@@ -428,6 +440,54 @@ public int vote(Integer boardSeq, Integer boardTypeSeq, Integer memberSeq, Strin
 #### 해결 방법
 
 43번째 줄에 `<script src="http://code.jquery.com/jquery-latest.js"></script>`를 추가해주었다.
+
+---
+
+### `@ResponseBody`가 붙은 경우 리턴 타입에 상관없이 모두 문자열로 해석한다.
+
+#### 문제 상황
+
+다음은 `read.jsp`에서 좋아요 또는 싫어요 버튼을 누른 후 실행되는 성공 콜백 함수이다.
+
+```javascript
+// 결과 성공 콜백함수
+success : function(result) {
+	// console.log(typeof result);
+	if (result === 1 && isLike === 'Y') {
+		$('a#cThumbsUpAnchor').addClass('active');
+		$('a#cThumbsDownAnchor').removeClass('active');
+	} else if (result === 1 && isLike === 'N') {
+		$('a#cThumbsUpAnchor').removeClass('active');
+		$('a#cThumbsDownAnchor').addClass('active');
+	} else if (result === 2) {
+		$('a#cThumbsUpAnchor').removeClass('active');
+		$('a#cThumbsDownAnchor').removeClass('active');
+	}
+},
+```
+
+위의 `if-else-if`문 중 어떤 블록도 수행되지 않음을 확인할 수 있었다. `RestNoticeController`의 `vote()`의 리턴 타입은 `int`지만 HTTP 메시지 컨버터를 통해 `String`으로 변환된다. 값 뿐만 아니라 타입까지 확인하는 `===` 연산의 결과가 `false`였기 때문에 어떤 블록도 수행되지 않은 것이다.
+
+#### 해결 방법
+
+```javascript
+// 결과 성공 콜백함수
+success : function(result) {
+	// console.log(typeof result);
+	if (result === '1' && isLike === 'Y') {
+		$('a#cThumbsUpAnchor').addClass('active');
+		$('a#cThumbsDownAnchor').removeClass('active');
+	} else if (result === '1' && isLike === 'N') {
+		$('a#cThumbsUpAnchor').removeClass('active');
+		$('a#cThumbsDownAnchor').addClass('active');
+	} else if (result === '2') {
+		$('a#cThumbsUpAnchor').removeClass('active');
+		$('a#cThumbsDownAnchor').removeClass('active');
+	}
+},
+```
+
+위와 같이 문자열 타입을 비교하도록 변경해주었다.
 
 ## 📝 메모
 
