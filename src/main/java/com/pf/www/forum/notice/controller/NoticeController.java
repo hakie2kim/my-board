@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.pf.www.forum.notice.dto.BoardDto;
@@ -54,17 +55,16 @@ public class NoticeController {
 	public String write(
 			// @RequestParam HashMap<String, String> params,
 			@ModelAttribute BoardDto boardDto,
-			HttpServletRequest request
+			HttpServletRequest request,
+			@RequestParam(name="attFile", required=false) MultipartFile[] mfs
 			) {
-		// System.out.println(params);
-		
 		// 추후 변경 예정
 		boardDto.setBoardTypeSeq(1);
 		HttpSession session = request.getSession();
 		Integer memberSeq = (Integer) session.getAttribute("memberSeq");
 		boardDto.setRegMemberSeq(67);
 		
-		boardService.write(boardDto);
+		boardService.write(boardDto, mfs);
 		
 		return "redirect:/forum//notice/listPage.do";
 	}

@@ -1,5 +1,7 @@
 package com.pf.www.forum.notice.dao;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.pf.www.forum.notice.dto.BoardDto;
 
@@ -92,8 +96,18 @@ public class BoardDao extends JdbcTemplate {
 		String sql = "INSERT INTO forum.board "
 				+ "(board_type_seq, title, content, reg_dtm, reg_member_seq) "
 				+ "VALUES(?, ?, ?, DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), ?);";
-		Object[] args = {boardDto.getBoardTypeSeq(), boardDto.getTitle(), boardDto.getContent(), boardDto.getRegMemberSeq()};
-		return update(sql, args);		
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder(); 
+		update(connection -> {
+	        PreparedStatement ps = connection
+	          .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	          ps.setInt(1, boardDto.getBoardTypeSeq());
+	          ps.setString(2, boardDto.getTitle());
+	          ps.setString(3, boardDto.getContent());
+	          ps.setInt(4, boardDto.getRegMemberSeq());
+	          return ps;
+	    }, keyHolder);
+		return keyHolder.getKey().intValue();
 	}
 	
 	public int updateBoard(BoardDto boardDto) {

@@ -27,6 +27,11 @@
 		<property name="suffix" value=".jsp" />
 		<property name="order" value="2" />
 	</bean>
+	
+	<!-- 파일 업로드 MultipartHttpServletRequest resolver -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+      <property name="maxUploadSize" value="-1"/>
+    </bean>
 
 	<mvc:resources mapping="/assest/**" location="/assest/" />
 

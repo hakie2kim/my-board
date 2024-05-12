@@ -7,10 +7,14 @@
 `NoticeController` ➭ `BoardService` ➭ `BoardDao`
 `listPage()` ➭ `findAllBoards()` ➭ `findAll()` (파라미터, 리턴 타입 추후 보완 예정)
 
+---
+
 ### 게시물 단건 조회
 
 `NoticeController` ➭ `BoardService` ➭ `BoardDao`
 `readPage()` ➭ `findBoardByBoardSeq()` ➭ `findBoardByBoardSeq()` (파라미터, 리턴 타입 추후 보완 예정)
+
+---
 
 ### 페이징
 
@@ -152,12 +156,16 @@ public class Pagination {
 }
 ```
 
+---
+
 ### 게시물 별 좋아요/싫어요 조회
 
 `NoticeController` ➭ `BoardService` ➭ `BoardDao`
 `readPage()` ➭ `findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq()` ➭ `findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq()` (파라미터, 리턴 타입 추후 보완 예정)
 
 `member_seq`는 `session`에서 갖고 온다.
+
+---
 
 ### 게시물 별 좋아요/싫어요 반영
 
@@ -176,15 +184,21 @@ public class Pagination {
 
 `member_seq`는 `session`에서 갖고 온다.
 
+---
+
 ### 게시물 쓰기
 
 `RestNoticeController` ➭ `BoardService` ➭ `BoardDao`
 `write()` ➭ `write()` ➭ `addBoard()` (파라미터, 리턴 타입 추후 보완 예정)
 
+---
+
 ### 게시물 수정
 
 `NoticeController` ➭ `BoardService` ➭ `BoardDao`
 `modify()` ➭ `modify()` ➭ `updateBoard()` (파라미터, 리턴 타입 추후 보완 예정)
+
+---
 
 ## 🔨 기능 요구사항
 
@@ -216,7 +230,7 @@ public class Pagination {
 
 #### `RestNoticeController`
 
-- [x] 게시물 별 좋아요/싫어요 반영: `/forum/notice/{boardSeq}/{boardTypeSeq}/{isLike}/vote.do`
+- [x] 게시물 별 좋아요/싫어요 반영: `/forum/notice/{boardSeq}/{boardTypeSeq}/vote.do`
 
 ### 예외 처리
 
@@ -512,6 +526,8 @@ LIMIT ((현재 페이지) - 1) * (페이지 당 게시물 수), OFFSET (페이�
 ```
 
 참고로 `OFFSET`은 생략 가능하다.
+
+---
 
 ### 식별 vs. 비식별 관계
 
