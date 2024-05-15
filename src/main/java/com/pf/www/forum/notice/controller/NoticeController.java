@@ -1,5 +1,6 @@
 package com.pf.www.forum.notice.controller;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -103,6 +105,7 @@ public class NoticeController {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
 		mv.addObject("board", boardService.findBoardByBoardSeqAndBoardTypeSeq(boardSeq, boardTypeSeq));
+		mv.addObject("attFiles", boardService.findBoardAttList(boardSeq, boardTypeSeq));
 		mv.setViewName("forum/notice/modify");
 		
 		return mv;
@@ -127,11 +130,12 @@ public class NoticeController {
 		return "redirect:/forum//notice/listPage.do";
 	}
 	
-	@GetMapping("/forum/notice/download.do")
-	public String download(@RequestParam Integer attSeq) {
-		// BoardAttachDto boardAttachDto = boardService.findDownloadFileInfo(attSeq);
-		
-		return "fileDownloadView"; // pf-servlet에 등록한 View
+	@GetMapping("/forum/notice/downloadFile.do")
+	public String downloadFile(@RequestParam Integer attSeq, Model model) {
+		BoardAttachDto boardAttachDto = boardService.findFileInfo(attSeq);
+		model.addAttribute("file", new File(boardAttachDto.getSavePath()));
+		model.addAttribute("orgFileNm", boardAttachDto.getOrgFileNm());
+		return "fileDownloadView"; // pf-servlet.xml에 등록한 View
 	}
 
 }

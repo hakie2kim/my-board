@@ -81,35 +81,39 @@ public class BoardService {
 
 	public boolean write(BoardDto boardDto, MultipartFile[] mfs) {
 		File file = null;
-		
+
 		try {
-			// 1. DB에 게시글 정보 저장 
+			// 1. DB에 게시글 정보 저장
 			int boardSeq = boardDao.addBoard(boardDto);
-			
-			for (MultipartFile mf : mfs) {		
+
+			for (MultipartFile mf : mfs) {
+				// 원본 파일 이름이 빈 경우 = 파일 3개 중 하나라도 업로드 하지 않은 경우 -> 그 다음 MultipartFile로 넘어가기
+				if (ObjectUtils.isEmpty(mf.getOriginalFilename()))
+					continue;
+				
 				// 2. 물리적 파일 저장
 				file = fileUtil.saveFile(mf);
-				
+
 				BoardAttachDto boardAttachDto = new BoardAttachDto();
 				boardAttachDto.setBoardSeq(boardSeq);
-				boardAttachDto.setBoardTypeSeq(1);
+				boardAttachDto.setBoardTypeSeq(boardDto.getBoardTypeSeq());
 				boardAttachDto.setOrgFileNm(mf.getOriginalFilename());
 				boardAttachDto.setChngFileNm(file.getName());
 				boardAttachDto.setFileType(mf.getContentType());
 				boardAttachDto.setFileSize(mf.getSize());
 				boardAttachDto.setSavePath(file.getAbsolutePath());
-				
+
 				// 3. DB에 파일 정보 저장
 				boardAttachDao.addBoardAttach(boardAttachDto);
 			}
-			
+
 			return true;
 		} catch (IllegalStateException | IOException e) {
 			// 물리적 파일 지우기
 			if (ObjectUtils.isEmpty(file))
 				file.delete();
-			
-			return false;		
+
+			return false;
 		}
 	}
 
@@ -118,11 +122,22 @@ public class BoardService {
 	}
 
 	public List<BoardAttachDto> findBoardAttList(Integer boardSeq, Integer boardTypeSeq) {
-		return boardDao.findBoardAttList(boardSeq, boardTypeSeq);
+		return boardAttachDao.findBoardAttList(boardSeq, boardTypeSeq);
 	}
 
-	/*
-	 * public BoardAttachDto findDownloadFileInfo(Integer attSeq) { return boardDao
-	 * }
-	 */
+	public BoardAttachDto findFileInfo(Integer attSeq) { 
+		return boardAttachDao.findBoardAtt(attSeq);
+	}
+
+	public int removeFile(Integer attSeq) {
+		// 1. 지울 파일 정보를 갖고 옴
+		BoardAttachDto boardAttachDto = boardAttachDao.findBoardAtt(attSeq);
+		
+		// 2. 물리적 파일 삭제
+		new File(boardAttachDto.getSavePath()).delete();
+		
+		// 3. DB에 저장한 파일 정보 삭제
+		return boardAttachDao.deleteBoardAtt(attSeq);
+	}
+
 }

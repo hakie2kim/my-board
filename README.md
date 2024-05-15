@@ -231,12 +231,20 @@ public class Pagination {
 
 서로 다른 사용자가 같은 이름의 파일을 업로드 했을 때 파일 이름이 중복되지 않도록 고유한 이름으로 바꿔주도록 한다.
 
-### Maven Dependency 추가
+#### Maven dependency 추가
 
 - `Apache Commons IO` `(ver 2.16.1)`: https://mvnrepository.com/artifact/commons-io/commons-io
 - `Apache Commons FileUpload` `(ver 1.5)`: https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
 
-### `<form>` 태그 속성
+#### Bean 등록
+
+```xml
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<property name="maxUploadSize" value="-1"/>
+</bean>
+```
+
+#### `<form>` 태그 속성
 
 HTML 폼 전송 방식에는 두 가지가 있다. 해당 값들은 `enctype` 속성을 통해 결정할 수 있다.
 
@@ -267,7 +275,7 @@ username=jun&bday=20020202
 
 하지만 파일까지 같이 전송할 경우 문자와 바이너리를 같이 보내야 하는데 이를 위해 나온 전송 방식이 바로 `multipart/form-data`이다.
 
-#### 흐름
+##### 흐름
 
 `write.jsp` ➭ `NoticeController` ➭ `BoardService` ➭ `BoardDao`, `FileUtil`, `BoardAttachDao`
 `<input type="file" name="attFile">` ➭ `write()` ➭ `addBoard()`, `saveFile()`, `addBoardAttach()` (파라미터, 리턴 타입 추후 보완 예정)
@@ -284,6 +292,36 @@ username=jun&bday=20020202
 1. `/file/연도/월/일` 폴더가 존재 하지 않으면 만든다.
 2. 파일 이름을 UUID를 이용해 변경한다.
 3. `MultipartFile`의 메서드 `transferTo()`를 이용해 파일을 저장한다. `transferTo()`는 `IOException`, `IllegalStateException` 예외를 던진다.
+
+---
+
+### 게시물 별 파일 조회
+
+`NoticeController` ➭ `BoardService` ➭ `BoardAttachDao` ➭ `read.jsp`
+`readPage()` ➭ `findBoardAttList()` ➭ `findBoardAttList()` (파라미터, 리턴 타입 추후 보완 예정)
+
+---
+
+### 게시물 별 파일 개별 다운로드
+
+#### `FileDownloadView`
+
+추상 클래스 `AbstractView`를 구현하고 `renderMergedOutputModel()`를 오버라이드 한다. 해당 뷰로 다운로드 받을 파일(`file`)과 원본 파일 이름(`orgFileNm`)을 보내주면 된다.
+
+#### `BeanNameViewResolver` 뷰 리졸버 등록
+
+```xml
+<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+	<property name="order" value="0" />
+</bean>
+```
+
+`BeanNameViewResolver`는 빈 이름으로 뷰를 찾아서 반환하는 뷰 리졸버이다. 해당 뷰 리졸버의 순위를 우선으로 변경하여 `readPage()`에서 `"fileViewResolver"`를 리턴했을 때 직접 등록한 `fileViewResolver` 뷰를 찾도록 한다.
+
+#### 흐름
+
+`NoticeController` ➭ `BoardService` ➭ `BoardAttachDao` ➭ `FileDownloadView`
+`downloadFile()` ➭ `findFileInfo()` ➭ `findBoardAtt()` (파라미터, 리턴 타입 추후 보완 예정)
 
 ---
 
@@ -357,6 +395,7 @@ public ModelAndView listPage(
   @RequestParam(defaultValue="1") Integer page,
   @RequestParam(defaultValue="10") Integer size
 ) {
+...
 ```
 
 ---
@@ -589,6 +628,24 @@ success : function(result) {
 ```
 
 위와 같이 문자열 타입을 비교하도록 변경해주었다.
+
+---
+
+### `Calendar`의 `JANUARY` 상수는 `0`이다.
+
+#### 문제 상황
+
+```java
+Calendar calendar = Calendar.getInstance();
+int year = calendar.get(Calendar.YEAR);
+int month = calendar.get(Calendar.MONTH);
+```
+
+오늘이 만약 2024년 5월 15일인 경우 `/file/2024/4/15`라는 폴더가 생성된다.
+
+#### 해결 방법
+
+`Calendar`의 `JANUARY` 상수는 `0`이기 때문에 `month`의 값을 구할 때 `+1`을 해주었다.
 
 ## 📝 메모
 

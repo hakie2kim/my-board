@@ -122,15 +122,13 @@ String ctx = request.getContextPath();
                             
                             <br/><br/><br/><br/>
                             
-                            <c:if test="${attFiles ne null}">
-	                            <c:forEach var="attFile" items="${attFiles}">
-	                            	<div>
-										<a href='<%=ctx%>/forum/notice/download.do?attachSeq=${attFile.attachSeq}'>
-											${attFile.orgFileNm} (${attFile.fileSize}) 
-										</a>
-	                            	</div>
-	                            </c:forEach>
-                            </c:if>
+                            <c:forEach var="attFile" items="${attFiles}">
+                            	<div>
+									<a href='<%=ctx%>/forum/notice/download.do?attSeq=${attFile.attachSeq}'>
+										${attFile.orgFileNm} (${attFile.fileSize}) 
+									</a>
+                            	</div>
+                            </c:forEach>
                         </div>
                         <!-- end .forum_issue -->
 

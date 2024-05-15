@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
 String ctx = request.getContextPath();
 %>
@@ -54,6 +55,37 @@ String ctx = request.getContextPath();
 				$('#content').val($(this).text());
 	    	});
 	    }
+	    
+	    function removeFile(attachSeq) {
+	    	let url = "<%=ctx%>/forum/notice";
+	    	url += "/" + attachSeq;
+	    	url += "/removeFile.do";
+	    	
+	    	$.ajax({    
+	    		type : "delete",           
+	    		// 타입 (get, post, put 등등)    
+	    		url : url,
+	    		// 요청할 서버url
+	    		// async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json"
+	    			// "X-HTTP-Method-Override" : "POST"
+	    		},
+	    		dataType : "text",
+    			// 결과 성공 콜백함수 
+	    		success : function(result) {
+	    			if (result === '1') {
+	    				window.location.reload();
+	    			}
+	    		},
+    			// 결과 에러 콜백함수
+	    		error : function(request, status, error) {
+	    			console.log(error);
+	    		}
+	    	});
+	    }
 	</script>
 </head>
 
@@ -76,16 +108,27 @@ String ctx = request.getContextPath();
                                 <div id="trumbowyg-demo"></div>
                                 <input type="hidden" id="content" name="content" />
                             </div>
-                            <div class="form-group">
-                                <div class="attachments">
-                                    <label>Attachments</label>
-                                    <label>
-                                        <span class="lnr lnr-paperclip"></span> Add File
-                                        <span>or Drop Files Here</span>
-                                        <input type="file" style="display:none;">
-                                    </label>
-                                </div>
-                            </div>
+                            <c:forEach var="attFile" items="${attFiles}">
+                            	<div class="form-group" style="display:flex; justify-content:space-between;">
+									<a href='<%=ctx%>/forum/notice/downloadFile.do?attSeq=${attFile.attachSeq}'>
+										${attFile.orgFileNm} (${attFile.fileSize}) 
+									</a>
+									<div onClick="javascript:removeFile(${attFile.attachSeq})">X</div>
+									<%-- <a href='<%=ctx%>/forum/notice/deleteFile.do?attSeq=${attFile.attachSeq}'>X</a> --%>
+                            	</div>
+                            </c:forEach>
+                            <c:forEach begin="1" end="${3-fn:length(attFiles)}">
+	                            <div class="form-group">
+	                                <div class="attachments">
+	                                    <label>Attachments</label>
+	                                    <label>
+	                                        <span class="lnr lnr-paperclip"></span> Add File
+	                                        <span>or Drop Files Here</span>
+	                                        <input type="file" style="display:inline-block;">
+	                                    </label>
+	                                </div>
+	                            </div>
+                            </c:forEach>
                             <div class="form-group">
                                 <button type="submit" class="btn btn--md btn-primary">Submit Request</button>
                             	<a href="<c:url value='/forum/notice/listPage.do'/>" class="btn btn--md btn-light">Cancel</a>
