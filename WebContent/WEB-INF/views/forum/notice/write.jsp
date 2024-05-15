@@ -94,6 +94,14 @@ String ctx = request.getContextPath();
                                         <input type="file" name="attFile" style="display:inline-block;">
                                     </label>
                                 </div>
+                                <div class="attachments">
+                                    <label>Attachments</label>
+                                    <label>
+                                        <span class="lnr lnr-paperclip"></span> Add File
+                                        <span>or Drop Files Here</span>
+                                        <input type="file" name="attFile" style="display:inline-block;">
+                                    </label>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn--md btn-primary">Submit Request</button>

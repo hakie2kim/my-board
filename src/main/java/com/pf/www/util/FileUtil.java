@@ -24,10 +24,12 @@ public class FileUtil {
 	public File saveFile(MultipartFile mf) throws IllegalStateException, IOException {
 		File file = new File(SAVE_PATH);
 		
+		// 1. SAVE_PATH 폴더가 없는 경우 만든다.
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 		
+		// 2. 파일 이름을 UUID를 이용해 바꾼다.
 		file = new File(SAVE_PATH, UUID.randomUUID().toString().replaceAll("-", ""));
 		mf.transferTo(file);
 		

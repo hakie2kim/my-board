@@ -200,6 +200,93 @@ public class Pagination {
 
 ---
 
+### 게시물 파일 업로드
+
+#### ERD 설계
+
+다음은 게시물 파일을 업로드 했을 때 저장해야 하는 값을 위한 논리 테이블이다.
+
+|   논리 이름    |               예시 값                |
+| :------------: | :----------------------------------: |
+|   일련 번호    |                  1                   |
+|  게시판 번호   |                  1                   |
+|  게시글 번호   |                 1013                 |
+| 원본 파일 이름 |              커피.jpec               |
+|  변경 파일명   |         djvanlkwnlkean.jpec          |
+|  업로드 일시   |              2405110900              |
+|   파일 형식    |              image/jpec              |
+|   파일 크기    |               7402849                |
+|   저장 경로    | /file/2024/05/11/djvanlkwnlkean.jpec |
+
+파일 형식은 파일을 다운로드 받을 때 인코딩할 방식을 정하는 `content-type`의 값으로 사용된다.
+
+저장 경로는 다음과 같이 `URL`, `URI` 방식으로 저장할 수 있다.
+
+- 다운로드 `URL`: http://localhost:8080/file/djvanlkwnlkean.jpec
+- 다운로드 `URI`: /file/2024/05/11/djvanlkwnlkean.jpec
+
+클라우드에 파일을 저장할 경우에는 파일의 일련 번호를 DB에서 찾아 다운로드하면 된다.
+
+일자별로 구분된 폴더에 파일을 저장하는 이유는 전체 파일 리스트를 찾기 위해 `ls -la`와 같은 명령어를 입력했을 때 파일 리스트가 전부 보이지 않을 수도 있기 때문이다.
+
+서로 다른 사용자가 같은 이름의 파일을 업로드 했을 때 파일 이름이 중복되지 않도록 고유한 이름으로 바꿔주도록 한다.
+
+### Maven Dependency 추가
+
+- `Apache Commons IO` `(ver 2.16.1)`: https://mvnrepository.com/artifact/commons-io/commons-io
+- `Apache Commons FileUpload` `(ver 1.5)`: https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
+
+### `<form>` 태그 속성
+
+HTML 폼 전송 방식에는 두 가지가 있다. 해당 값들은 `enctype` 속성을 통해 결정할 수 있다.
+
+- `application/x-www-form-urlencoded` (기본값)
+- `multipart/form-data`
+
+`<form>` 태그에 별도 `enctype` 옵션이 없다면 다음과 같은 예로 데이터가 전송된다.
+
+1. 다음과 같은 폼에 값을 입력하고 전송 버튼을 누른다.
+
+```html
+<form action="/register" method="post">
+  <input type="text" name="username" />
+  <input type="text" name="bday" />
+  <button type="submit">전송</button>
+</form>
+```
+
+2. 웹 브라우저는 다음과 같은 HTTP 메시지를 생성한다.
+
+```
+POST /register HTTP/1.1
+Host: localhost:8080
+Content-Type: application/x-www-form-urlencoded
+
+username=jun&bday=20020202
+```
+
+하지만 파일까지 같이 전송할 경우 문자와 바이너리를 같이 보내야 하는데 이를 위해 나온 전송 방식이 바로 `multipart/form-data`이다.
+
+#### 흐름
+
+`write.jsp` ➭ `NoticeController` ➭ `BoardService` ➭ `BoardDao`, `FileUtil`, `BoardAttachDao`
+`<input type="file" name="attFile">` ➭ `write()` ➭ `addBoard()`, `saveFile()`, `addBoardAttach()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `BoardService`의 `write()` (파라미터, 리턴 타입 추후 보완 예정)
+
+1. `board` 테이블에 게시물 관련 정보를 저장한다.
+2. `saveFile()`을 통해 실제 파일 저장한다.
+   2-1. 만약 실패한 경우 `saveFile()` 메서드는 `IOException`, `IllegalStateException` 예외를 던지는데 이 경우 실제 저장한 파일을 삭제한다 (`delete()`).
+3. `board_attach` 테이블에 파일 관련 정보를 저장한다.
+
+- `saveFile()` (파라미터, 리턴 타입 추후 보완 예정)
+
+1. `/file/연도/월/일` 폴더가 존재 하지 않으면 만든다.
+2. 파일 이름을 UUID를 이용해 변경한다.
+3. `MultipartFile`의 메서드 `transferTo()`를 이용해 파일을 저장한다. `transferTo()`는 `IOException`, `IllegalStateException` 예외를 던진다.
+
+---
+
 ## 🔨 기능 요구사항
 
 ### 프로젝트 환경 설정하기
