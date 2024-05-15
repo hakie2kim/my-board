@@ -119,6 +119,18 @@ String ctx = request.getContextPath();
                                 <span>${board.regDtm}</span>
                             </div>
                             <p style="margin-bottom: 0; margin-top: 19px;">${board.content}</p>
+                            
+                            <br/><br/><br/><br/>
+                            
+                            <c:if test="${attFiles ne null}">
+	                            <c:forEach var="attFile" items="${attFiles}">
+	                            	<div>
+										<a href='<%=ctx%>/forum/notice/download.do?attachSeq=${attFile.attachSeq}'>
+											${attFile.orgFileNm} (${attFile.fileSize}) 
+										</a>
+	                            	</div>
+	                            </c:forEach>
+                            </c:if>
                         </div>
                         <!-- end .forum_issue -->
 

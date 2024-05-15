@@ -116,4 +116,13 @@ public class BoardService {
 	public int modfiy(BoardDto boardDto) {
 		return boardDao.updateBoard(boardDto);
 	}
+
+	public List<BoardAttachDto> findBoardAttList(Integer boardSeq, Integer boardTypeSeq) {
+		return boardDao.findBoardAttList(boardSeq, boardTypeSeq);
+	}
+
+	/*
+	 * public BoardAttachDto findDownloadFileInfo(Integer attSeq) { return boardDao
+	 * }
+	 */
 }

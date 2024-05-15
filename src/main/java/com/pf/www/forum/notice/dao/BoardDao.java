@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import com.pf.www.forum.notice.dto.BoardAttachDto;
 import com.pf.www.forum.notice.dto.BoardDto;
 
 @Repository
@@ -137,6 +138,31 @@ public class BoardDao extends JdbcTemplate {
 				+ "WHERE board_seq=? AND board_type_seq=? AND member_seq=?;";
 		Object[] args = {boardSeq, boardTypeSeq, memberSeq};
 		return update(sql, args);
+	}
+
+	public List<BoardAttachDto> findBoardAttList(Integer boardSeq, Integer boardTypeSeq) {
+		String sql = "SELECT * FROM forum.board_attach "
+				+ "WHERE board_seq = ? AND board_type_seq = ? ";
+		Object[] args = {boardSeq, boardTypeSeq};
+		return query(sql, boardAttRowMapper(), args);		
+	}
+	
+	private RowMapper<BoardAttachDto> boardAttRowMapper() {
+		return (rs, rowNum) -> {
+			BoardAttachDto boardAttachDto = new BoardAttachDto();
+			boardAttachDto.setAttachSeq(rs.getInt("attach_seq"));
+			boardAttachDto.setBoardSeq(rs.getInt("board_seq"));
+			boardAttachDto.setBoardTypeSeq(rs.getInt("board_type_seq"));
+			boardAttachDto.setOrgFileNm(rs.getString("org_file_nm"));
+			boardAttachDto.setSavePath(rs.getString("save_path"));
+			boardAttachDto.setChngFileNm(rs.getString("chng_file_nm"));
+			boardAttachDto.setFileSize(rs.getLong("file_size"));
+			boardAttachDto.setFileType(rs.getString("file_type"));
+			boardAttachDto.setAccessUri(rs.getString("access_uri"));
+			boardAttachDto.setRegDtm(rs.getString("reg_dtm"));
+			
+			return boardAttachDto;
+		};
 	}
 	
 }

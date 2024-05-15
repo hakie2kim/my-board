@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.pf.www.forum.notice.dto.BoardAttachDto;
 import com.pf.www.forum.notice.dto.BoardDto;
 import com.pf.www.forum.notice.service.BoardService;
 import com.pf.www.forum.notice.util.Pagination;
@@ -79,6 +81,7 @@ public class NoticeController {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
 		mv.addObject("board", boardService.findBoardByBoardSeqAndBoardTypeSeq(boardSeq, boardTypeSeq));
+		mv.addObject("attFiles", boardService.findBoardAttList(boardSeq, boardTypeSeq));
 		
 		HttpSession session = request.getSession();
 		Integer memberSeq = (Integer) session.getAttribute("memberSeq");
@@ -122,6 +125,13 @@ public class NoticeController {
 		boardService.modfiy(boardDto);
 		
 		return "redirect:/forum//notice/listPage.do";
+	}
+	
+	@GetMapping("/forum/notice/download.do")
+	public String download(@RequestParam Integer attSeq) {
+		// BoardAttachDto boardAttachDto = boardService.findDownloadFileInfo(attSeq);
+		
+		return "fileDownloadView"; // pf-servlet에 등록한 View
 	}
 
 }

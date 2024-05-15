@@ -274,7 +274,7 @@ username=jun&bday=20020202
 
 - `BoardService`의 `write()` (파라미터, 리턴 타입 추후 보완 예정)
 
-1. `board` 테이블에 게시물 관련 정보를 저장한다.
+1. `board` 테이블에 게시물 관련 정보를 저장한다. ➭ `3.`에서 필요한 값을 위해 `addBoard()` 리턴 값을 `board_seq`로 변경했다.
 2. `saveFile()`을 통해 실제 파일 저장한다.
    2-1. 만약 실패한 경우 `saveFile()` 메서드는 `IOException`, `IllegalStateException` 예외를 던지는데 이 경우 실제 저장한 파일을 삭제한다 (`delete()`).
 3. `board_attach` 테이블에 파일 관련 정보를 저장한다.
