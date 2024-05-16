@@ -98,7 +98,7 @@ String ctx = request.getContextPath();
             <div class="row">
                 <div class="col-lg-12">
                     <div class="question-form cardify p-4">
-                        <form action="<c:url value='/forum/notice/modify.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}' />" method="post">
+                        <form action="<c:url value='/forum/notice/modify.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}' />" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>제목</label>
                                 <input type="text" name="title" placeholder="Enter title here" value="${board.title}" required>
@@ -124,7 +124,7 @@ String ctx = request.getContextPath();
 	                                    <label>
 	                                        <span class="lnr lnr-paperclip"></span> Add File
 	                                        <span>or Drop Files Here</span>
-	                                        <input type="file" style="display:inline-block;">
+	                                        <input type="file" name="attFile" style="display:inline-block;">
 	                                    </label>
 	                                </div>
 	                            </div>

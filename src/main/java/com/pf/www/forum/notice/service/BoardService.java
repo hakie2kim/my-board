@@ -80,12 +80,16 @@ public class BoardService {
 	}
 
 	public boolean write(BoardDto boardDto, MultipartFile[] mfs) {
+		// 1. DB에 게시글 정보 저장
+		int boardSeq = boardDao.addBoard(boardDto);
+
+		return uploadFiles(boardDto, mfs, boardSeq);
+	}
+
+	public boolean uploadFiles(BoardDto boardDto, MultipartFile[] mfs, int boardSeq) {
 		File file = null;
-
+		
 		try {
-			// 1. DB에 게시글 정보 저장
-			int boardSeq = boardDao.addBoard(boardDto);
-
 			for (MultipartFile mf : mfs) {
 				// 원본 파일 이름이 빈 경우 = 파일 3개 중 하나라도 업로드 하지 않은 경우 -> 그 다음 MultipartFile로 넘어가기
 				if (ObjectUtils.isEmpty(mf.getOriginalFilename()))

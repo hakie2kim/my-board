@@ -115,9 +115,11 @@ public class NoticeController {
 	public String modfiy(
 			// @RequestParam HashMap<String, String> params,
 			@ModelAttribute BoardDto boardDto,
-			HttpServletRequest request
+			HttpServletRequest request,
+			@RequestParam(name="attFile", required=false) MultipartFile[] mfs
 			) {
-		// System.out.println(params);
+		System.out.println(boardDto);
+		System.out.println(mfs);
 		
 		// 추후 변경 예정
 		boardDto.setBoardTypeSeq(1);
@@ -126,6 +128,7 @@ public class NoticeController {
 		boardDto.setUpdateMemberSeq(67);
 		
 		boardService.modfiy(boardDto);
+		boardService.uploadFiles(boardDto, mfs, boardDto.getBoardSeq());
 		
 		return "redirect:/forum//notice/listPage.do";
 	}
@@ -137,5 +140,4 @@ public class NoticeController {
 		model.addAttribute("orgFileNm", boardAttachDto.getOrgFileNm());
 		return "fileDownloadView"; // pf-servlet.xml에 등록한 View
 	}
-
 }
