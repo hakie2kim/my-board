@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%
 String ctx = request.getContextPath();
 %>
@@ -35,9 +36,12 @@ String ctx = request.getContextPath();
     <link rel="icon" type="image/png" sizes="16x16" href="<%=ctx%>/assest/template/images/favicon.png">    
 	<script type="text/javascript">
 		var ctx = '<%= request.getContextPath() %>';
-	</script>	
+	</script>
+	<!-- 추가 시작 -->
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<%-- <script src="<%=ctx%>/assest/template/js/vendor/jquery/jquery-1.12.3.js"></script> --%>
+	<!-- 추가 끝 -->	
 	<script src="<%=ctx%>/assest/js/page.js"></script>
-	
     <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg.min.js"></script>
     <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg/ko.js"></script>
     <script type="text/javascript">
@@ -81,6 +85,30 @@ String ctx = request.getContextPath();
     			// 결과 에러 콜백함수
 	    		error : function(request, status, error) {
 	    			console.log(error);
+	    		}
+	    	});
+	    }
+	    
+	    function reply(boardSeq, boardTypeSeq) {
+	    	$.ajax({        
+	    		type : 'post',
+	    		url : '<%=ctx%>/forum/notice/reply.do',
+	    		headers : {
+	    			"Content-Type" : "application/json"
+	    		},
+	    		dataType : 'json',
+	    		data : JSON.stringify ({
+	    			boardSeq : boardSeq,
+	    			boardTypeSeq : boardTypeSeq,
+	    			content: $('#trumbowyg-demo').trumbowyg('html')
+	    		}),
+	    		success : function(result) {
+	    			if(result === '1') {
+	    				window.location.reload();
+	    			}
+	    		},
+	    		error : function(request, status, error) {
+	    			console.log(error)
 	    		}
 	    	});
 	    }
@@ -131,47 +159,50 @@ String ctx = request.getContextPath();
                             </c:forEach>
                         </div>
                         
-                       	<form action="<%=ctx%>/forum/notice/downloadMultipleFiles.do" method="post">
-                       		<c:forEach var="attFile" items="${attFiles}">
-                       			<input type="hidden" name="attSeq" value="${attFile.attachSeq}">
-                       		</c:forEach>
-                       		<button type="submit">파일 한번에 다운 받기</button>
-                       	</form>
+                        <c:if test="${fn:length(attFiles) ne 0}">
+	                       	<form action="<%=ctx%>/forum/notice/downloadMultipleFiles.do" method="post">
+	                       		<c:forEach var="attFile" items="${attFiles}">
+	                       			<input type="hidden" name="attSeq" value="${attFile.attachSeq}">
+	                       		</c:forEach>
+	                       		<button type="submit">파일 한번에 다운 받기</button>
+	                       	</form>
+                       	</c:if>
                         <!-- end .forum_issue -->
 
                         <div class="forum--replays cardify">
                             <div class="area_title">
-                                <h4>1 Replies</h4>
+                                <h4>${fn:length(comments)} Replies</h4>
                             </div>
                             <!-- end .area_title -->
-
-                            <div class="forum_single_reply">
-                                <div class="reply_content">
-                                    <div class="name_vote">
-                                        <div class="pull-left">
-                                            <h4>AazzTech
-                                                <span>staff</span>
-                                            </h4>
-                                            <p>Answered 3 days ago</p>
-                                        </div>
-                                        <!-- end .pull-left -->
-
-                                        <div class="vote">
-                                            <a href="#" class="active">
-                                                <span class="lnr lnr-thumbs-up"></span>
-                                            </a>
-                                            <a href="#" class="">
-                                                <span class="lnr lnr-thumbs-down"></span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <!-- end .vote -->
-                                    <p>Nunc placerat mi id nisi interdum mollis. Praesent pharetra, justo ut sceleris que the
-                                        mattis, leo quam aliquet congue placerat mi id nisi interdum mollis. </p>
-                                </div>
-                                <!-- end .reply_content -->
-                            </div>
-                            <!-- end .forum_single_reply -->
+							<c:forEach  var="comment" items="${comments}">
+	                            <div class="forum_single_reply">
+	                                <div class="reply_content">
+	                                    <div class="name_vote">
+	                                        <div class="pull-left">
+	                                            <h4>${comment.memberNm}
+	                                                <span>staff</span>
+	                                            </h4>
+	                                            <!-- <p>Answered 3 days ago</p> -->
+	                                            <p>${comment.regDtm}</p>
+	                                        </div>
+	                                        <!-- end .pull-left -->
+	
+	                                        <div class="vote">
+	                                            <a href="#" class="active">
+	                                                <span class="lnr lnr-thumbs-up"></span>
+	                                            </a>
+	                                            <a href="#" class="">
+	                                                <span class="lnr lnr-thumbs-down"></span>
+	                                            </a>
+	                                        </div>
+	                                    </div>
+	                                    <!-- end .vote -->
+	                                    <p>${comment.content}</p>
+	                                </div>
+	                                <!-- end .reply_content -->
+	                            </div>
+	                            <!-- end .forum_single_reply -->
+							</c:forEach>
 
                             <div class="comment-form-area">
                                 <h4>Leave a comment</h4>
@@ -185,7 +216,7 @@ String ctx = request.getContextPath();
                                     <div class="media-body">
                                         <form action="#" class="comment-reply-form">
                                             <div id="trumbowyg-demo"></div>
-                                            <button class="btn btn--sm btn--round">Post Comment</button>
+                                            <button class="btn btn--sm btn--round" onClick="javascript:reply(${board.boardSeq}, ${board.boardTypeSeq})">Post Comment</button>
                                         </form>
                                     </div>
                                 </div>

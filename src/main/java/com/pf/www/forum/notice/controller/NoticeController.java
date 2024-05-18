@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.pf.www.forum.notice.dto.BoardAttachDto;
 import com.pf.www.forum.notice.dto.BoardDto;
+import com.pf.www.forum.notice.service.BoardCommentService;
 import com.pf.www.forum.notice.service.BoardService;
 import com.pf.www.forum.notice.util.Pagination;
 
@@ -30,6 +31,9 @@ import com.pf.www.forum.notice.util.Pagination;
 public class NoticeController {
 	@Autowired
 	BoardService boardService;
+	
+	@Autowired
+	BoardCommentService boardCommentService;
 	
 	@RequestMapping("/forum//notice/listPage.do")
 	public ModelAndView listPage(@RequestParam HashMap<String, String> params,
@@ -93,6 +97,8 @@ public class NoticeController {
 		System.out.println("------------------" + memberSeq);
 		// 회원가입 기능 연결: 1 -> memberSeq
 		mv.addObject("isLike", boardService.findIsLikeByBoardSeqAndBoardTypeSeqAndMemberSeq(boardSeq, boardTypeSeq, 1));
+		
+		mv.addObject("comments", boardCommentService.findComments(boardSeq, boardTypeSeq));
 		
 		mv.setViewName("forum/notice/read");
 		
