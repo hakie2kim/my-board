@@ -144,4 +144,21 @@ public class BoardService {
 		return boardAttachDao.deleteBoardAtt(attSeq);
 	}
 
+	public File makeZipFile(List<BoardAttachDto> filesInfo) {
+//		// 1. 파일들이 저장된 경로를 찾음
+//		List<String> fileSavePaths = new ArrayList<>();
+//		for (BoardAttachDto attSeq : fileInfos) {
+//			fileSavePaths.add(findFileInfo(attSeq).getSavePath());
+//		}
+		
+		// 2. 지정된 경로들로 파일들을 압축해 리턴
+		File zipFile = null;
+		try {
+			zipFile = fileUtil.createZipFile(filesInfo);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return zipFile;
+	}
+
 }

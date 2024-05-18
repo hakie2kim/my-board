@@ -1,8 +1,10 @@
 package com.pf.www.forum.notice.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -137,7 +140,22 @@ public class NoticeController {
 	public String downloadFile(@RequestParam Integer attSeq, Model model) {
 		BoardAttachDto boardAttachDto = boardService.findFileInfo(attSeq);
 		model.addAttribute("file", new File(boardAttachDto.getSavePath()));
-		model.addAttribute("orgFileNm", boardAttachDto.getOrgFileNm());
+		model.addAttribute("fileName", boardAttachDto.getOrgFileNm());
+		return "fileDownloadView"; // pf-servlet.xml에 등록한 View
+	}
+	
+	@PostMapping("/forum/notice/downloadMultipleFiles.do")
+	public String downloadMultipleFiles(@RequestParam MultiValueMap<String, Object> params, Model model) {
+		// ArrayList<Object> -> ArrayList<BoardAttachDto>
+		List<BoardAttachDto> boardAttachDtos = new ArrayList<>();
+		for (Object attSeq : params.get("attSeq")) {
+			int attSeqInt = Integer.parseInt(String.valueOf(attSeq));
+			boardAttachDtos.add(boardService.findFileInfo(attSeqInt));
+		}
+		
+		File zipfile = boardService.makeZipFile(boardAttachDtos);
+		model.addAttribute("file", zipfile);
+		model.addAttribute("fileName", zipfile.getName());
 		return "fileDownloadView"; // pf-servlet.xml에 등록한 View
 	}
 }

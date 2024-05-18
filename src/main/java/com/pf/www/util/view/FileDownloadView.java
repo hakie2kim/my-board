@@ -25,7 +25,7 @@ public class FileDownloadView extends AbstractView {
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		File file = (File) model.get("file");
-		String orgFileNm = (String) model.get("orgFileNm");
+		String fileName = (String) model.get("fileName");
 		
 		// 헤더 세팅
 		response.setContentType(getContentType());
@@ -37,9 +37,9 @@ public class FileDownloadView extends AbstractView {
 		boolean ie = userAgent.indexOf("MSIE") > -1;
 		String fileNm = null;
 		if (ie) {
-			fileNm = URLEncoder.encode(orgFileNm, "UTF-8");
+			fileNm = URLEncoder.encode(fileName, "UTF-8");
 		} else {
-			fileNm = new String(orgFileNm.getBytes("UTF-8"), "ISO-8859-1");
+			fileNm = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
 		}
 
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileNm + "\"");

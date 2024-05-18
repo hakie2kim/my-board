@@ -121,7 +121,7 @@ String ctx = request.getContextPath();
                             <p style="margin-bottom: 0; margin-top: 19px;">${board.content}</p>
                             
                             <br/><br/><br/><br/>
-                            
+                                                        
                             <c:forEach var="attFile" items="${attFiles}">
                             	<div>
 									<a href='<%=ctx%>/forum/notice/download.do?attSeq=${attFile.attachSeq}'>
@@ -130,8 +130,14 @@ String ctx = request.getContextPath();
                             	</div>
                             </c:forEach>
                         </div>
+                        
+                       	<form action="<%=ctx%>/forum/notice/downloadMultipleFiles.do" method="post">
+                       		<c:forEach var="attFile" items="${attFiles}">
+                       			<input type="hidden" name="attSeq" value="${attFile.attachSeq}">
+                       		</c:forEach>
+                       		<button type="submit">파일 한번에 다운 받기</button>
+                       	</form>
                         <!-- end .forum_issue -->
-
 
                         <div class="forum--replays cardify">
                             <div class="area_title">
