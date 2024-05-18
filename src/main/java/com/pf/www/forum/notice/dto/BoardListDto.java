@@ -1,6 +1,6 @@
 package com.pf.www.forum.notice.dto;
 
-public class BoardDto {
+public class BoardListDto {
 	// Board
 	private int boardSeq;
 	private int boardTypeSeq;
@@ -15,6 +15,10 @@ public class BoardDto {
 		
 	// Member
 	private String memberId;
+	
+	// BoardAtt, BoardComment
+	private int attachCount;
+	private int commentCount;
 
 	public int getBoardSeq() {
 		return boardSeq;
@@ -102,6 +106,22 @@ public class BoardDto {
 
 	public void setMemberId(String memberId) {
 		this.memberId = memberId;
+	}
+	
+	public int getAttachCount() {
+		return attachCount;
+	}
+	
+	public void setAttachCount(int attachCount) {
+		this.attachCount = attachCount;
+	}
+	
+	public int getCommentCount() {
+		return commentCount;
+	}
+	
+	public void setCommentCount(int commentCount) {
+		this.commentCount = commentCount;
 	}
 
 	@Override

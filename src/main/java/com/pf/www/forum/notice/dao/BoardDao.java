@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.pf.www.forum.notice.dto.BoardAttachDto;
 import com.pf.www.forum.notice.dto.BoardDto;
+import com.pf.www.forum.notice.dto.BoardListDto;
 
 @Repository
 public class BoardDao extends JdbcTemplate {
@@ -24,14 +25,42 @@ public class BoardDao extends JdbcTemplate {
 		super(dataSource);
 	};
 	
-	public List<BoardDto> findAll(Integer startBoardSeq, Integer postsPerPage) {
-		String sql = "SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id "
+	public List<BoardListDto> findAll(Integer startBoardSeq, Integer postsPerPage) {
+		String sql = "SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id, COUNT(ba.attach_seq) as attach_count, COUNT(bc.comment_seq) as comment_count "
 				+ "FROM forum.`board` b "
 				+ "JOIN forum.`member` m "
 				+ "ON b.reg_member_seq = m.member_seq "
+				+ "LEFT JOIN forum.`board_attach` ba "
+				+ "ON b.board_seq = ba.board_seq "
+				+ "LEFT JOIN forum.`board_comment` bc "
+				+ "ON b.board_seq = bc.board_seq "
+				+ "GROUP BY b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id "
 				+ "LIMIT ?, ?; ";
 		Object[] args = {startBoardSeq, postsPerPage};
-		return query(sql, boardRowMapper(), args);
+		return query(sql, boardListRowMapper(), args);
+	}
+	
+	private RowMapper<BoardListDto> boardListRowMapper() {
+		return (rs, rowNum) -> {
+			BoardListDto boardListDto = new BoardListDto();
+			boardListDto.setBoardSeq(rs.getInt("board_seq"));
+			boardListDto.setBoardTypeSeq(rs.getInt("board_type_seq"));
+			boardListDto.setTitle(rs.getString("title"));
+			boardListDto.setContent(rs.getString("content"));
+			boardListDto.setHit(rs.getInt("hit"));
+			boardListDto.setDelYn(rs.getString("del_yn"));
+			boardListDto.setRegDtm(rs.getString("reg_dtm"));
+			boardListDto.setRegMemberSeq(rs.getInt("reg_member_seq"));
+			boardListDto.setUpdateDtm(rs.getString("update_dtm"));
+			boardListDto.setUpdateMemberSeq(rs.getInt("update_member_seq"));
+
+			boardListDto.setMemberId(rs.getString("member_id"));
+			
+			boardListDto.setAttachCount(rs.getInt("attach_count"));
+			boardListDto.setCommentCount(rs.getInt("comment_count"));
+			
+			return boardListDto;
+		};
 	}
 	
 	public BoardDto findBoardByBoardSeqAndBoardTypeSeq(Integer boardSeq, Integer boardTypeSeq) {

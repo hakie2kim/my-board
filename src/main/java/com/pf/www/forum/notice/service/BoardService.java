@@ -17,6 +17,7 @@ import com.pf.www.forum.notice.dao.BoardAttachDao;
 import com.pf.www.forum.notice.dao.BoardDao;
 import com.pf.www.forum.notice.dto.BoardAttachDto;
 import com.pf.www.forum.notice.dto.BoardDto;
+import com.pf.www.forum.notice.dto.BoardListDto;
 import com.pf.www.util.FileUtil;
 
 @Service
@@ -30,7 +31,7 @@ public class BoardService {
 	@Autowired
 	private BoardAttachDao boardAttachDao;
 
-	public List<BoardDto> findAllBoards(Integer currPage, Integer postsPerPage) {
+	public List<BoardListDto> findAllBoards(Integer currPage, Integer postsPerPage) {
 		Integer startBoardSeq = (currPage - 1) * postsPerPage;
 		return boardDao.findAll(startBoardSeq, postsPerPage);
 	}

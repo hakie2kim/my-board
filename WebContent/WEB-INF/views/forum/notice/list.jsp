@@ -66,7 +66,7 @@ String ctx = request.getContextPath();
 	                                                <td>${board.boardSeq}</td>
 	                                                <td>
 	                                                	<a href="<c:url value='/forum/notice/readPage.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}'/>">
-	                                                		${board.title}
+	                                                		${board.title} / ${board.commentCount} / <c:if test="${board.attachCount gt 0}">파일 있음</c:if>
 	                                                	</a>
 	                                                </td>
 	                                                <td>${board.regDtm}</td>
