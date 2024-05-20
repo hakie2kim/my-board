@@ -34,85 +34,6 @@ String ctx = request.getContextPath();
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="16x16" href="<%=ctx%>/assest/template/images/favicon.png">    
-	<script type="text/javascript">
-		var ctx = '<%= request.getContextPath() %>';
-	</script>
-	<!-- 추가 시작 -->
-	<script src="http://code.jquery.com/jquery-latest.js"></script>
-	<%-- <script src="<%=ctx%>/assest/template/js/vendor/jquery/jquery-1.12.3.js"></script> --%>
-	<!-- 추가 끝 -->	
-	<script src="<%=ctx%>/assest/js/page.js"></script>
-    <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg.min.js"></script>
-    <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg/ko.js"></script>
-    <script type="text/javascript">
-	    $('#trumbowyg-demo').trumbowyg({
-	        lang: 'kr'
-	    });
-	    
-	    function vote(boardSeq, boardTypeSeq, isLike) {	    	
-	    	let url = "<%=ctx%>/forum/notice";
-	    	url += "/" + boardSeq;
-	    	url += "/" + boardTypeSeq;
-	    	url += "/vote.do?isLike=" + isLike;
-	    	
-	    	$.ajax({    
-	    		type : "get",           
-	    		// 타입 (get, post, put 등등)    
-	    		url : url,
-	    		// 요청할 서버url
-	    		// async : true,
-	    		// 비동기화 여부 (default : true)
-	    		headers : {
-	    			// Http header
-	    			"Content-Type" : "application/json"
-	    			// "X-HTTP-Method-Override" : "POST"
-	    		},
-	    		dataType : "text",
-    			// 결과 성공 콜백함수 
-	    		success : function(result) {
-	    			// console.log(typeof result);
-	    			if (result === '1' && isLike === 'Y') {
-	    				$('a#cThumbsUpAnchor').addClass('active');
-	    				$('a#cThumbsDownAnchor').removeClass('active');
-	    			} else if (result === '1' && isLike === 'N') {
-	    				$('a#cThumbsUpAnchor').removeClass('active');
-	    				$('a#cThumbsDownAnchor').addClass('active');
-	    			} else if (result === '2') {
-	    				$('a#cThumbsUpAnchor').removeClass('active');
-	    				$('a#cThumbsDownAnchor').removeClass('active');
-	    			}
-	    		},
-    			// 결과 에러 콜백함수
-	    		error : function(request, status, error) {
-	    			console.log(error);
-	    		}
-	    	});
-	    }
-	    
-	    function reply(boardSeq, boardTypeSeq) {
-	    	$.ajax({        
-	    		type : 'post',
-	    		url : '<%=ctx%>/forum/notice/reply.do',
-	    		headers : {
-	    			"Content-Type" : "application/json"
-	    		},
-	    		dataType : 'json',
-	    		data : JSON.stringify ({
-	    			boardSeq : boardSeq,
-	    			boardTypeSeq : boardTypeSeq,
-	    			content: $('#trumbowyg-demo').trumbowyg('html')
-	    		}),
-	    		success : function(result) {
-	    			if(result === '1') {
-	    				window.location.reload();
-	    			}
-	    		},
-	    		error : function(request, status, error) {
-	    			console.log(error)
-	    		}
-	    	});
-	    }
-	</script>
 </head>
 
 <body class="preload home1 mutlti-vendor">
@@ -174,7 +95,7 @@ String ctx = request.getContextPath();
                                 <h4>${fn:length(comments)} Replies</h4>
                             </div>
                             <!-- end .area_title -->
-							<c:forEach  var="comment" items="${comments}">
+							<c:forEach var="comment" items="${comments}">
 	                            <div class="forum_single_reply">
 	                                <div class="reply_content">
 	                                    <div class="name_vote">
@@ -200,9 +121,30 @@ String ctx = request.getContextPath();
 	                                    <p>${comment.content}</p>
 	                                </div>
 	                                <!-- end .reply_content -->
+	                                <button data-lvl="${comment.lvl+1}" data-parent-comment-seq="${comment.commentSeq}" onClick="javascript:showCommentFormAreaReply(this)">답글 달기</button>
 	                            </div>
 	                            <!-- end .forum_single_reply -->
 							</c:forEach>
+							
+							<div class="comment-form-area reply" style="display:none;">
+                                <h4>Leave a reply</h4>
+                                <!-- comment reply -->
+                                <div class="media comment-form support__comment">
+                                    <div class="media-left">
+                                        <a href="#">
+                                            <img class="media-object" src="<%=ctx%>/assest/template/images/m7.png" alt="Commentator Avatar">
+                                        </a>
+                                    </div>
+                                    <div class="media-body">
+                                    	<!-- form -> div -->
+                                        <div class="comment-reply-form">
+		                                    <div id="trumbowyg-reply"></div>
+		                                    <button class="btn btn--sm btn--round" data-lvl=0 onClick="javascript:leaveReplyOrComment(${board.boardSeq}, ${board.boardTypeSeq}, this, '#trumbowyg-reply')">Post Reply</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- comment reply -->
+                            </div>
 
                             <div class="comment-form-area">
                                 <h4>Leave a comment</h4>
@@ -216,7 +158,7 @@ String ctx = request.getContextPath();
                                     <div class="media-body">
                                         <form action="#" class="comment-reply-form">
                                             <div id="trumbowyg-demo"></div>
-                                            <button class="btn btn--sm btn--round" onClick="javascript:reply(${board.boardSeq}, ${board.boardTypeSeq})">Post Comment</button>
+                                            <button class="btn btn--sm btn--round" data-lvl=0 onClick="javascript:leaveReplyOrComment(${board.boardSeq}, ${board.boardTypeSeq}, this, '#trumbowyg-demo')">Post Comment</button>
                                         </form>
                                     </div>
                                 </div>
@@ -259,6 +201,103 @@ String ctx = request.getContextPath();
     <script src="<%=ctx%>/assest/template/js/main.js"></script>
     <script src="<%=ctx%>/assest/template/js/map.js"></script>
     <!-- endinject -->
+    
+    <script type="text/javascript">
+		var ctx = '<%= request.getContextPath() %>';
+	</script>
+
+	<script src="<%=ctx%>/assest/js/page.js"></script>
+    <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg.min.js"></script>
+    <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg/ko.js"></script>
+    <script type="text/javascript">
+	    $('#trumbowyg-reply').trumbowyg({
+	        lang: 'kr'
+	    });
+	    
+	    $('#trumbowyg-demo').trumbowyg({
+	        lang: 'kr'
+	    });
+	    
+	    function vote(boardSeq, boardTypeSeq, isLike) {	    	
+	    	let url = "<%=ctx%>/forum/notice";
+	    	url += "/" + boardSeq;
+	    	url += "/" + boardTypeSeq;
+	    	url += "/vote.do?isLike=" + isLike;
+	    	
+	    	$.ajax({    
+	    		type : "get",           
+	    		// 타입 (get, post, put 등등)    
+	    		url : url,
+	    		// 요청할 서버url
+	    		// async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json"
+	    			// "X-HTTP-Method-Override" : "POST"
+	    		},
+	    		dataType : "text",
+    			// 결과 성공 콜백함수 
+	    		success : function(result) {
+	    			// console.log(typeof result);
+	    			if (result === '1' && isLike === 'Y') {
+	    				$('a#cThumbsUpAnchor').addClass('active');
+	    				$('a#cThumbsDownAnchor').removeClass('active');
+	    			} else if (result === '1' && isLike === 'N') {
+	    				$('a#cThumbsUpAnchor').removeClass('active');
+	    				$('a#cThumbsDownAnchor').addClass('active');
+	    			} else if (result === '2') {
+	    				$('a#cThumbsUpAnchor').removeClass('active');
+	    				$('a#cThumbsDownAnchor').removeClass('active');
+	    			}
+	    		},
+    			// 결과 에러 콜백함수
+	    		error : function(request, status, error) {
+	    			console.log(error);
+	    		}
+	    	});
+	    }
+	    
+	    function showCommentFormAreaReply(elem) {
+	    	const dataLvl = elem.getAttribute('data-lvl');
+	    	const parentCommentSeq = elem.getAttribute('data-parent-comment-seq');
+	    	
+	    	const forumSingleReply = elem.closest('.forum_single_reply');
+	    	let commentFormAreaReply = document.querySelector('.comment-form-area.reply');
+	    	commentFormAreaReply.style.display = 'block';
+	    	
+	    	commentFormAreaReply.querySelector('.btn').setAttribute('data-lvl', parseInt(dataLvl));
+	    	commentFormAreaReply.querySelector('.btn').setAttribute('data-parent-comment-seq', parseInt(parentCommentSeq));
+	    	
+	    	forumSingleReply.append(commentFormAreaReply);
+	    }
+	    
+	    function leaveReplyOrComment(boardSeq, boardTypeSeq, buttonElem, contentId) {
+	    	$.ajax({        
+	    		type : 'post',
+	    		url : '<%=ctx%>/forum/notice/reply.do',
+	    		headers : {
+	    			'content-type': 'application/json'
+	    		},
+	    		dataType : 'json',
+	    		data : JSON.stringify ({
+	    			lvl: buttonElem.getAttribute('data-lvl'),
+	    			content: $(contentId).trumbowyg('html'),
+	    			boardSeq : boardSeq,
+	    			boardTypeSeq : boardTypeSeq,
+	    			parentCommentSeq: buttonElem.getAttribute('data-parent-comment-seq')
+	    		}),
+	    		success : function(result) {
+	    			if (result === 1) {
+	    				window.location.replace('<%=ctx%>/forum/notice/readPage.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}');
+	    			}
+	    		},
+	    		error : function(request, status, error) {
+	    			console.log(error);
+	    		}
+	    	});
+	    }
+	</script>
 </body>
 
 </html>

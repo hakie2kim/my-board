@@ -102,4 +102,12 @@ public class BoardCommentDto {
 	public void setMemberNm(String memberNm) {
 		this.memberNm = memberNm;
 	}
+
+	@Override
+	public String toString() {
+		return "BoardCommentDto [commentSeq=" + commentSeq + ", lvl=" + lvl + ", content=" + content + ", boardSeq="
+				+ boardSeq + ", boardTypeSeq=" + boardTypeSeq + ", memberSeq=" + memberSeq + ", parentCommentSeq="
+				+ parentCommentSeq + ", regDtm=" + regDtm + ", updateDtm=" + updateDtm + ", deleteDtm=" + deleteDtm
+				+ ", memberNm=" + memberNm + "]";
+	}
 }
