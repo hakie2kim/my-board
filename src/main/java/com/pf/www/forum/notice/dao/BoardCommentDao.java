@@ -77,4 +77,12 @@ public class BoardCommentDao extends JdbcTemplate {
 			return boardCommentDto;
 		};
 	}
+
+	public int deleteReply(Integer commentSeq) {
+		String sql = "UPDATE forum.board_comment "
+				+ "SET delete_dtm = DATE_FORMAT(NOW(),'%Y%m%d%H%i%s') "
+				+ "WHERE comment_seq = ?; ";
+		Object[] args = {commentSeq};
+		return update(sql, args);
+	}
 }

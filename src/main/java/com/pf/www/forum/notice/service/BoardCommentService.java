@@ -21,4 +21,8 @@ public class BoardCommentService {
 		return boardCommentDao.findComments(boardSeq, boardTypeSeq);
 	}
 
+	public int deleteReply(Integer commentSeq) {
+		return boardCommentDao.deleteReply(commentSeq);
+	}
+
 }

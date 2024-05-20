@@ -96,34 +96,42 @@ String ctx = request.getContextPath();
                             </div>
                             <!-- end .area_title -->
 							<c:forEach var="comment" items="${comments}">
-	                            <div class="forum_single_reply">
-	                                <div class="reply_content">
-	                                    <div class="name_vote">
-	                                        <div class="pull-left">
-	                                            <h4>${comment.memberNm}
-	                                                <span>staff</span>
-	                                            </h4>
-	                                            <!-- <p>Answered 3 days ago</p> -->
-	                                            <p>${comment.regDtm}</p>
-	                                        </div>
-	                                        <!-- end .pull-left -->
-	
-	                                        <div class="vote">
-	                                            <a href="#" class="active">
-	                                                <span class="lnr lnr-thumbs-up"></span>
-	                                            </a>
-	                                            <a href="#" class="">
-	                                                <span class="lnr lnr-thumbs-down"></span>
-	                                            </a>
-	                                        </div>
-	                                    </div>
-	                                    <!-- end .vote -->
-	                                    <p>${comment.content}</p>
-	                                </div>
-	                                <!-- end .reply_content -->
-	                                <button data-lvl="${comment.lvl+1}" data-parent-comment-seq="${comment.commentSeq}" onClick="javascript:showCommentFormAreaReply(this)">답글 달기</button>
-	                            </div>
-	                            <!-- end .forum_single_reply -->
+								<c:if test="${not empty comment.deleteDtm}">
+									<div class="forum_single_reply">
+										<div class="reply_content">삭제된 댓글입니다.</div>
+									</div>
+								</c:if>
+								<c:if test="${empty comment.deleteDtm}">
+		                            <div class="forum_single_reply">
+		                                <div class="reply_content">
+		                                    <div class="name_vote">
+		                                        <div class="pull-left">
+		                                            <h4>${comment.memberNm}
+		                                                <span>staff</span>
+		                                            </h4>
+		                                            <!-- <p>Answered 3 days ago</p> -->
+		                                            <p>${comment.regDtm}</p>
+		                                        </div>
+		                                        <!-- end .pull-left -->
+		
+		                                        <div class="vote">
+		                                            <a href="#" class="active">
+		                                                <span class="lnr lnr-thumbs-up"></span>
+		                                            </a>
+		                                            <a href="#" class="">
+		                                                <span class="lnr lnr-thumbs-down"></span>
+		                                            </a>
+		                                        </div>
+		                                    </div>
+		                                    <!-- end .vote -->
+		                                    <p>${comment.content}</p>
+		                                </div>
+		                                <!-- end .reply_content -->
+		                                <button data-lvl="${comment.lvl+1}" data-parent-comment-seq="${comment.commentSeq}" onClick="javascript:showCommentFormAreaReply(this)">답글 달기</button>
+		                                <button onClick="javascript:deleteReply(${comment.commentSeq})">삭제</button>
+		                            </div>
+		                            <!-- end .forum_single_reply -->
+								</c:if>
 							</c:forEach>
 							
 							<div class="comment-form-area reply" style="display:none;">
@@ -287,6 +295,29 @@ String ctx = request.getContextPath();
 	    			boardTypeSeq : boardTypeSeq,
 	    			parentCommentSeq: buttonElem.getAttribute('data-parent-comment-seq')
 	    		}),
+	    		success : function(result) {
+	    			if (result === 1) {
+	    				window.location.replace('<%=ctx%>/forum/notice/readPage.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}');
+	    			}
+	    		},
+	    		error : function(request, status, error) {
+	    			console.log(error);
+	    		}
+	    	});
+	    }
+	    
+	    function deleteReply(commentSeq) {
+	    	let url = '<%=ctx%>/forum/notice';
+	    	url += '/' + commentSeq;
+	    	url += '/reply.do';
+	    	
+	    	$.ajax({        
+	    		type : 'patch',
+	    		url : url,
+	    		headers : {
+	    			'content-type': 'application/json'
+	    		},
+	    		dataType : 'json',
 	    		success : function(result) {
 	    			if (result === 1) {
 	    				window.location.replace('<%=ctx%>/forum/notice/readPage.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}');
