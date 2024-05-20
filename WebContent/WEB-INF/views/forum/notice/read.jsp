@@ -102,7 +102,7 @@ String ctx = request.getContextPath();
 									</div>
 								</c:if>
 								<c:if test="${empty comment.deleteDtm}">
-		                            <div class="forum_single_reply">
+		                            <div class="forum_single_reply" data-comment-seq="${comment.commentSeq}">
 		                                <div class="reply_content">
 		                                    <div class="name_vote">
 		                                        <div class="pull-left">
@@ -110,7 +110,7 @@ String ctx = request.getContextPath();
 		                                                <span>staff</span>
 		                                            </h4>
 		                                            <!-- <p>Answered 3 days ago</p> -->
-		                                            <p>${comment.regDtm}</p>
+		                                            <p>${comment.regDtm lt comment.updateDtm ? comment.updateDtm += ' (수정됨)' : comment.regDtm}</p>
 		                                        </div>
 		                                        <!-- end .pull-left -->
 		
@@ -129,10 +129,32 @@ String ctx = request.getContextPath();
 		                                <!-- end .reply_content -->
 		                                <button data-lvl="${comment.lvl+1}" data-parent-comment-seq="${comment.commentSeq}" onClick="javascript:showCommentFormAreaReply(this)">답글 달기</button>
 		                                <button onClick="javascript:deleteReply(${comment.commentSeq})">삭제</button>
+		                                <button onClick="javascript:showCommentFormAreaEdit(this, ${comment.commentSeq}, '${comment.content}')">수정</button>
 		                            </div>
 		                            <!-- end .forum_single_reply -->
 								</c:if>
 							</c:forEach>
+							
+							<div class="comment-form-area edit" style="display:none;">
+                                <h4>Edit your comment or reply</h4>
+                                <!-- comment reply -->
+                                <div class="media comment-form support__comment">
+                                    <div class="media-left">
+                                        <a href="#">
+                                            <img class="media-object" src="<%=ctx%>/assest/template/images/m7.png" alt="Commentator Avatar">
+                                        </a>
+                                    </div>
+                                    <div class="media-body">
+                                    	<!-- form -> div -->
+                                        <div class="comment-reply-form">
+		                                    <div id="trumbowyg-edit"></div>
+		                                    <button class="btn btn--sm btn--round" data-comment-seq=0 onClick="javascript:editReplyOrComment(this)">Edit</button>
+		                                    <button class="btn btn--sm btn--round" onClick="javascript:cancelCommentFormAreaEdit(this)">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- comment reply -->
+                            </div>
 							
 							<div class="comment-form-area reply" style="display:none;">
                                 <h4>Leave a reply</h4>
@@ -218,7 +240,11 @@ String ctx = request.getContextPath();
     <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg.min.js"></script>
     <script src="<%=ctx%>/assest/template/js/vendor/trumbowyg/ko.js"></script>
     <script type="text/javascript">
-	    $('#trumbowyg-reply').trumbowyg({
+	    $('#trumbowyg-edit').trumbowyg({
+	        lang: 'kr'
+	    });
+    
+    	$('#trumbowyg-reply').trumbowyg({
 	        lang: 'kr'
 	    });
 	    
@@ -280,6 +306,23 @@ String ctx = request.getContextPath();
 	    	forumSingleReply.append(commentFormAreaReply);
 	    }
 	    
+	    function showCommentFormAreaEdit(elem, commentSeq, content) {
+	    	const forumSingleReply = elem.closest('.forum_single_reply');
+	    	
+	    	let commentFormAreaEdit = document.querySelector('.comment-form-area.edit');
+	    	commentFormAreaEdit.style.display = 'block';
+	    	commentFormAreaEdit.querySelector('.comment-reply-form > button').setAttribute('data-comment-seq', commentSeq);
+	    	commentFormAreaEdit.querySelector('#trumbowyg-edit').innerText = content;
+	    	
+	    	forumSingleReply.after(commentFormAreaEdit);
+	    }
+	    
+	    function cancelCommentFormAreaEdit(elem) {
+	    	const commentFormAreaEdit = elem.closest('.comment-form-area.edit');
+	    	commentFormAreaEdit.previousElementSibling.style.display = 'block';
+	    	commentFormAreaEdit.style.display = 'none';
+	    }
+	    
 	    function leaveReplyOrComment(boardSeq, boardTypeSeq, buttonElem, contentId) {
 	    	$.ajax({        
 	    		type : 'post',
@@ -306,13 +349,42 @@ String ctx = request.getContextPath();
 	    	});
 	    }
 	    
-	    function deleteReply(commentSeq) {
+	    function editReplyOrComment(elem) {
+	    	const commentSeq = elem.getAttribute('data-comment-seq');
+	    	
 	    	let url = '<%=ctx%>/forum/notice';
 	    	url += '/' + commentSeq;
 	    	url += '/reply.do';
 	    	
 	    	$.ajax({        
 	    		type : 'patch',
+	    		url : url,
+	    		headers : {
+	    			'content-type': 'application/json'
+	    		},
+	    		dataType : 'json',
+	    		data : JSON.stringify({
+	    			commentSeq: commentSeq,
+	    			content: $('#trumbowyg-edit').trumbowyg('html')
+	    		}),
+	    		success : function(result) {
+	    			if (result === 1) {
+	    				window.location.replace('<%=ctx%>/forum/notice/readPage.do?boardSeq=${board.boardSeq}&boardTypeSeq=${board.boardTypeSeq}');
+	    			}
+	    		},
+	    		error : function(request, status, error) {
+	    			console.log(error);
+	    		}
+	    	});
+	    }
+	    
+	    function deleteReply(commentSeq) {
+	    	let url = '<%=ctx%>/forum/notice';
+	    	url += '/' + commentSeq;
+	    	url += '/reply.do';
+	    	
+	    	$.ajax({        
+	    		type : 'delete',
 	    		url : url,
 	    		headers : {
 	    			'content-type': 'application/json'

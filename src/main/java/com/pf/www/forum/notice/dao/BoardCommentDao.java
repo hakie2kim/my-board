@@ -85,4 +85,12 @@ public class BoardCommentDao extends JdbcTemplate {
 		Object[] args = {commentSeq};
 		return update(sql, args);
 	}
+
+	public int updateReply(BoardCommentDto boardCommentDto) {
+		String sql = "UPDATE forum.board_comment "
+				+ "SET content = ?, update_dtm = DATE_FORMAT(NOW(),'%Y%m%d%H%i%s') "
+				+ "WHERE comment_seq = ?; ";
+		Object[] args = {boardCommentDto.getContent(), boardCommentDto.getCommentSeq()};
+		return update(sql, args);
+	}
 }

@@ -1,6 +1,7 @@
 package com.pf.www.forum.notice.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +24,13 @@ public class RestReplyController {
 		return boardCommentService.reply(boardCommentDto);
 	}
 	
-	@PatchMapping("/forum/notice/{commentSeq}/reply.do")
+	@DeleteMapping("/forum/notice/{commentSeq}/reply.do")
 	public int deleteReply(@PathVariable Integer commentSeq) {
 		return boardCommentService.deleteReply(commentSeq);
 	}
+	
+	@PatchMapping("/forum/notice/{commentSeq}/reply.do")
+	public int editReply(@RequestBody BoardCommentDto boardCommentDto) {
+		return boardCommentService.editReply(boardCommentDto);
+	}	
 }

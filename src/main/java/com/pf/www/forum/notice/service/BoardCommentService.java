@@ -25,4 +25,8 @@ public class BoardCommentService {
 		return boardCommentDao.deleteReply(commentSeq);
 	}
 
+	public int editReply(BoardCommentDto boardCommentDto) {
+		return boardCommentDao.updateReply(boardCommentDto);
+	}
+
 }
