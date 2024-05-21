@@ -548,13 +548,33 @@ Mock 데이터가 삽입된 후 정렬했을 때는 다음과 같은 결과가 �
 ##### 흐름
 
 `read.jsp` ➭ `RestReplyController` ➭ `BoardCommentService` ➭ `BoardCommentDao`
-`leaveReplyOrComment()` ➭ `reply()` ➭ `addBoardComment()` (파라미터, 리턴 타입 추후 보완 예정)
+`showCommentFormAreaReply()`, `leaveReplyOrComment()` ➭ `reply()` ➭ `addBoardComment()` ➭ `addBoardComment()` (파라미터, 리턴 타입 추후 보완 예정)
 
 - `read.jsp`의 `leaveReplyOrComment()`
 
-  - 파라미터 중 `contentId`는 `'trumbowyg-edit'`로 대댓글 전용 `trumbowyg` 에디터(`.comment-form-area.edit`)의 값을 갖고 온다.
-  - 속성 `data-lvl`의 값은 대댓글을 달고 싶은 댓글로부터 전달되는 값이다. `showCommentFormAreaReply()`를 통해 `대댓글 달기` 버튼을 눌렀을 때 `trumbowyg` 에디터(`.comment-form-area.edit`)`<button>`에 `data-lvl`의 값이 전달된다.
+  - 파라미터 중 `contentId`는 `'trumbowyg-reply'`로 대댓글 전용 `trumbowyg` 에디터(`.comment-form-area.reply`)의 값을 갖고 온다.
+  - 속성 `data-lvl`의 값은 대댓글을 달고 싶은 댓글로부터 전달되는 값이다. `showCommentFormAreaReply()`를 통해 `대댓글 달기` 버튼을 눌렀을 때 `trumbowyg` 에디터(`.comment-form-area.reply`)`<button>`에 `data-lvl`의 값이 전달된다.
   - `data-parent-comment-seq` 또한 전달된다.
+
+#### 게시글 별 댓글 삭제
+
+##### 흐름
+
+`read.jsp` ➭ `RestReplyController` ➭ `BoardCommentService` ➭ `BoardCommentDao`
+`deleteReply()` ➭ `deleteReply()` ➭ `deleteReply()` ➭ `deleteReply()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `deleteReply()`: 성공한 경우 `'1'`이 ajax의 비동기 처리 결과 값으로 전달되고 `read.jsp`의 페이지가 새로고침됨
+
+#### 게시글 별 댓글 수정
+
+##### 흐름
+
+`read.jsp` ➭ `RestReplyController` ➭ `BoardCommentService` ➭ `BoardCommentDao`
+`showCommentFormAreaEdit()`, `editReplyOrComment()` ➭ `editReply()` ➭ `editReply()` ➭ `updateReply()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `read.jsp`의 `editReplyOrComment()`
+
+  - 속성 `data-comment-seq`의 값은 수정하고 싶은 댓글로부터 전달되는 값이다. `showCommentFormAreaEdit()`를 통해 `수정` 버튼을 눌렀을 때 `trumbowyg` 에디터(`.comment-form-area.edit`)`<button>`에 `data-comment-seq`의 값이 전달된다.
 
 ---
 
