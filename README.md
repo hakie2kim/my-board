@@ -529,6 +529,20 @@ Mock 데이터가 삽입된 후 정렬했을 때는 다음과 같은 결과가 �
 2. `reg_dtm`: 대댓글이 있는 경우에는 `lvl`을 사용해도 되지만 대댓글이 없는 경우를 위해 해당 정렬 기준을 사용한다.
 3. `comment_seq`: 앞의 두 기준이 같은 경우 구별하기 위해 해당 기준을 사용한다.
 
+#### 게시글 별 댓글 작성
+
+##### 흐름
+
+`read.jsp` ➭ `RestReplyController` ➭ `BoardCommentService` ➭ `BoardCommentDao`
+`leaveReplyOrComment()` ➭ `reply()` ➭ `addBoardComment()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `read.jsp`의 `leaveReplyOrComment()`
+
+  - 파라미터 중 `contentId`는 `'trumbowyg-demo'`로 대댓글이 아닌 댓글 전용 `trumbowyg` 에디터의 값을 갖고 온다.
+  - 속성 `data-parent-comment-seq`의 값은 0이다.
+
+---
+
 ## 🔨 기능 요구사항
 
 ### 프로젝트 환경 설정하기
