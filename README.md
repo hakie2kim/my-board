@@ -442,6 +442,12 @@ public File createZipFile(List<BoardAttachDto> filesInfo) throws IOException {
 
 ---
 
+### 게시글 목록 댓글 개수, 파일 유무 표시
+
+`BoardListDto`에 필드 `attachCount`, `commentCount` 추가
+
+---
+
 ## 🔨 기능 요구사항
 
 ### 프로젝트 환경 설정하기
