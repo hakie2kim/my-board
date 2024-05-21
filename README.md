@@ -200,6 +200,22 @@ public class Pagination {
 
 ---
 
+### 게시물 수정에서 파일 개별 삭제
+
+#### 흐름
+
+`modify.jsp` ➭ `RestNoticeController` ➭ `BoardService` ➭ `BoardAttachDao`
+`<buton> 태그 클릭 시 removeFile()` ➭ `removeFile()` ➭ `findBoardAtt()`, `deleteBoardAtt()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `BoardService`의 `removeFile()`
+
+1. 지워야 되는 파일의 정보를 찾음
+2. 물리적으로 저장되어 있는 파일을 삭제
+3. DB에 저장된 파일 정보 삭제
+4. 성공한 경우 `'1'`이 ajax의 비동기 처리 결과 값으로 전달되고 `modify.jsp`의 페이지가 새로고침됨
+
+---
+
 ### 게시물 파일 업로드
 
 #### ERD 설계
