@@ -188,15 +188,33 @@ public class Pagination {
 
 ### 게시물 쓰기
 
-`RestNoticeController` ➭ `BoardService` ➭ `BoardDao`
-`write()` ➭ `write()` ➭ `addBoard()` (파라미터, 리턴 타입 추후 보완 예정)
+`RestNoticeController` ➭ `BoardService` ➭ `BoardDao` / `BoardService`
+`write()` ➭ `write()` ➭ `addBoard()` / `uploadFiles()` (파라미터, 리턴 타입 추후 보완 예정)
 
 ---
 
 ### 게시물 수정
 
+#### 흐름
+
 `NoticeController` ➭ `BoardService` ➭ `BoardDao`
 `modify()` ➭ `modify()` ➭ `updateBoard()` (파라미터, 리턴 타입 추후 보완 예정)
+
+`NoticeController` ➭ `BoardService` ➭ `FileUtil` / `BoardAttachDao`
+`modify()` ➭ `uploadFiles()` ➭ `saveFile()` / `addBoardAttach()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `uploadFiles()`
+
+`MultipartFile`의 메서드 중 `getOriginalFilename()`을 이용해 파일의 이름이 비어있는 경우를 확인하고 이는 사용자가 파일을 업로드하지 않은 것이기 때문에 아래 과정을 수행하지 않는다.
+
+1. 물리적 파일 저장
+2. DB에 파일 정보 저장
+
+➭ 만약 위 과정에서 에러가 발생하는 경우, 저장된 물리적 파일을 지운다.
+
+#### 문제점
+
+사용자가 수정하지 않은 파일이 또 다시 업로드 되는 문제가 발생한다.
 
 ---
 
