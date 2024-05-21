@@ -448,6 +448,87 @@ public File createZipFile(List<BoardAttachDto> filesInfo) throws IOException {
 
 ---
 
+### 댓글
+
+#### ERD 설계
+
+|   논리 이름    |     예시 값      |
+| :------------: | :--------------: |
+|   일련 번호    |        1         |
+|  작성자 번호   |       1563       |
+|  게시판 번호   |        1         |
+|  게시글 번호   |       1013       |
+|   작성 일시    |    2405110900    |
+|   수정 일시    |    2405211908    |
+|      내용      | 댓글 내용입니다. |
+| 상위 일련 번호 |        30        |
+
+상위 일련 번호가 존재하면 대댓글이다.
+
+#### Mock 데이터 넣기
+
+```sql
+ALTER TABLE forum.board_comment AUTO_INCREMENT = 1;
+
+INSERT INTO forum.board_comment (lvl,content,board_seq,board_type_seq,member_seq,parent_comment_seq,reg_dtm,update_dtm,delete_dtm) VALUES
+	 (0,'1번 댓글',1000,1,67,NULL,'20240506124700',NULL,NULL);
+INSERT INTO forum.board_comment (lvl,content,board_seq,board_type_seq,member_seq,parent_comment_seq,reg_dtm,update_dtm,delete_dtm) VALUES
+	 (0,'2번 댓글',1000,1,67,NULL,'20240506124700',NULL,NULL);
+INSERT INTO forum.board_comment (lvl,content,board_seq,board_type_seq,member_seq,parent_comment_seq,reg_dtm,update_dtm,delete_dtm) VALUES
+	 (1,'1번 대댓글',1000,1,67,1,'20240506124700',NULL,NULL);
+INSERT INTO forum.board_comment (lvl,content,board_seq,board_type_seq,member_seq,parent_comment_seq,reg_dtm,update_dtm,delete_dtm) VALUES
+	 (2,'1번 대대댓글',1000,1,67,3,'20240506124700',NULL,NULL);
+```
+
+#### 게시글 별 댓글 조회
+
+##### 흐름
+
+`NoticeController` ➭ `BoardService` ➭ `BoardCommentDao`
+`readPage()` ➭ `findComments()` ➭ `findComments()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `BoardCommentDao`의 `findComments()`
+
+사용된 쿼리는 다음과 같다.
+
+```sql
+SELECT a.*, m.member_id
+FROM (
+	SELECT
+		p.comment_seq,
+		p.lvl,
+		p.content,
+		p.board_seq,
+		p.board_type_seq,
+		p.member_seq,
+		IFNULL(p.parent_comment_seq, s.parent_comment_seq) as parent_comment_seq,
+		p.reg_dtm
+	FROM board_comment p
+	LEFT JOIN board_comment s ON s.parent_comment_seq = p.comment_seq
+) a
+JOIN member m ON a.member_seq = m.member_seq
+WHERE board_seq = ? AND board_type_seq = ?
+ORDER BY IFNULL(parent_comment_seq, 9999999), a.reg_dtm, a.comment_seq;
+```
+
+Mock 데이터가 삽입된 후 정렬했을 때는 다음과 같은 결과가 나와야 한다.
+
+```
+(lvl, content, board_seq, board_type_seq, member_seq, parent_comment_seq, reg_dtm, update_dtm, delete_dtm)
+(0,'1번 댓글', 1000, 1, 67, NULL, '20240506124700', NULL, NULL)
+(1,'1번 대댓글', 1000, 1, 67, 1, '20240506124700', NULL, NULL)
+(2,'1번 대대댓글', 1000, 1, 67, 3, '20240506124700', NULL, NULL)
+(0,'2번 댓글', 1000, 1, 67, NULL, '20240506124700', NULL, NULL)
+```
+
+안 쪽 쿼리에서 `p.parent_comment_seq`가 `null`인 경우는 대댓글이 아닌 댓글인 경우이다. 이때 대댓글이 달려 있는 경우를 생각해보자. `null`은 값이 있는 경우보다 오름차순 정렬 시 우선 순위에서 밀리기 때문에 오름차순 정렬을 위해 임의로 `s.parent_comment_seq`로 변경해준다.
+
+정렬 기준을 차례대로 보자.
+
+1. `parent_comment_seq`: 이 값이 `null`인 경우는 정수 최댓값으로 값을 대체하는데 해당 행을 대댓글과 엮이지 않도록 가장 마지막으로 보내고 다음 기준을 이용해 정렬하게 한다. 대댓글이 없는 경우 해당 기준을 무효화한다고 생각하면 되겠다.
+2. `reg_dtm`: 대댓글이 있는 경우에는 `lvl`을 사용해도 되지만 대댓글이 없는 경우를 위해 해당 정렬 기준을 사용한다.
+3. `comment_seq`: 앞의 두 기준이 같은 경우 구별하기 위해 해당 기준을 사용한다.
+
 ## 🔨 기능 요구사항
 
 ### 프로젝트 환경 설정하기
