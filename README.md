@@ -325,6 +325,89 @@ username=jun&bday=20020202
 
 ---
 
+### 게시물 별 모든 파일 압축 다운로드
+
+#### 흐름
+
+`read.jsp` ➭ `NoticeController` ➭ `BoardService` ➭ `BoardAttachDao` ➭ `FileDownloadView`
+`<form> 태그` ➭ `downloadMultipleFiles()` ➭ `findFileInfo()`, `makeZipFile()` (파라미터, 리턴 타입 추후 보완 예정)
+
+- `read.jsp`
+
+```jsp
+<c:if test="${fn:length(attFiles) ne 0}">
+	<form action="<%=ctx%>/forum/notice/downloadMultipleFiles.do" method="post">
+		<c:forEach var="attFile" items="${attFiles}">
+			<input type="hidden" name="attSeq" value="${attFile.attachSeq}">
+		</c:forEach>
+		<button type="submit">파일 한번에 다운 받기</button>
+	</form>
+</c:if>
+```
+
+- `makeZipFile()`
+
+`FileUtil.java`의 `createZipFile()` 메서드를 사용한다.
+
+1. 파일 객체 생성 및 리스트에 추가
+   ➭ 파일이 저장될 때 `UUID`를 사용해 파일 이름이 바뀌기 때문에 `.zip` 파일을 만들 때는 `FileUtils`의 `copyFile()`을 이용해 원본 이름을 갖고 있는 파일로 복제한다.
+2. `.zip` 파일 생성
+3. 원래 이름으로 복원한 파일들 삭제
+
+```java
+public File createZipFile(List<BoardAttachDto> filesInfo) throws IOException {
+	List<File> files = new ArrayList<>();
+
+	// 파일 객체 생성 및 리스트에 추가
+	for (BoardAttachDto fileInfo : filesInfo) {
+		String renamedFileSavePath = fileInfo.getSavePath();
+			File renamedFile = new File(renamedFileSavePath);
+			File orgFile = new File(renamedFileSavePath.substring(0, renamedFileSavePath.lastIndexOf("\\") + 1) + fileInfo.getOrgFileNm());
+			FileUtils.copyFile(renamedFile, orgFile);
+			files.add(orgFile);
+	}
+
+	// 임시 파일로 생성된 ZIP 파일을 저장할 위치와 이름 설정)
+	File zipFile = File.createTempFile("compressed_files", ".zip");
+
+	// ZIP 파일 생성
+	try (FileOutputStream fos = new FileOutputStream(zipFile);
+				ZipOutputStream zos = new ZipOutputStream(fos)) {
+
+			// 각 파일을 ZIP 파일에 추가
+			for (File file : files) {
+					// 파일이 존재하고 파일일 경우에만 압축 진행
+					if (file.exists() && file.isFile()) {
+							try (FileInputStream fis = new FileInputStream(file)) {
+									// ZIP 엔트리 생성
+									ZipEntry zipEntry = new ZipEntry(file.getName());
+									zos.putNextEntry(zipEntry);
+
+									// 파일 데이터를 버퍼를 사용하여 읽고, ZIP 파일에 작성
+									byte[] buffer = new byte[1024];
+									int length;
+									while ((length = fis.read(buffer)) >= 0) {
+											zos.write(buffer, 0, length);
+									}
+							}
+					} else {
+							System.err.println("파일을 찾을 수 없습니다: " + file.getAbsolutePath());
+					}
+			}
+	}
+
+	// 원래 이름으로 복원한 파일들 삭제
+	for (File orgFile : files) {
+		orgFile.delete();
+	}
+
+	// 생성된 ZIP 파일을 리턴
+	return zipFile;
+}
+```
+
+---
+
 ## 🔨 기능 요구사항
 
 ### 프로젝트 환경 설정하기
